@@ -462,7 +462,7 @@
               <td>john@example.com</td>
               <td>
                 <a
-                  href="./profile.html?profileId=1"
+                  href="./profile.php?profileId=1"
                   target="_blank"
                   class="view-doc-btn"
                 >
@@ -482,7 +482,7 @@
               <td>jane@example.com</td>
               <td>
                 <a
-                  href="./profile.html?profileId=2"
+                  href="./profile.php?profileId=2"
                   target="_blank"
                   class="view-doc-btn"
                 >
