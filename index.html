@@ -34,6 +34,9 @@
       <button class="nav-btn" data-target="employeeList">
         <i class="fa-solid fa-users"></i> Employees
       </button>
+      <button class="nav-btn" data-target="leaveApplications">
+        <i class="fa-solid fa-plane-departure"></i> Leave Applications
+      </button>
     </div>
 
     <!-- Main Content -->
@@ -568,6 +571,89 @@
         </table>
       </div>
     </div>
+    <!-- Leave applications -->
+    <div id="leaveApplications" class="content-section hidden">
+      <h2>Leave Applications</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Reason</th>
+              <th>Application</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>LLC-01</td>
+              <td>John Doe</td>
+              <td>10/08/2025</td>
+              <td>15/08/2025</td>
+              <td>For final examination</td>
+              <td class="leaveApplicationButtons">
+                <a href=""
+                  ><button style="background-color: #17a2b8">View</button></a
+                >
+              </td>
+              <td class="leaveApplicationButtons">
+                <button title="Approve" style="background-color: #28a745">
+                  Approve
+                </button>
+                <button title="Reject" style="background-color: red">
+                  Reject
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>LLC-02</td>
+              <td>John Doe</td>
+              <td>10/08/2025</td>
+              <td>15/08/2025</td>
+              <td>For Sickness</td>
+              <td class="leaveApplicationButtons">
+                <a href=""
+                  ><button style="background-color: #17a2b8">View</button></a
+                >
+              </td>
+              <td class="leaveApplicationButtons">
+                <button title="Approve" style="background-color: #28a745">
+                  Approve
+                </button>
+                <button title="Reject" style="background-color: red">
+                  Reject
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>LLC-03</td>
+              <td>John Doe</td>
+              <td>10/08/2025</td>
+              <td>15/08/2025</td>
+              <td>For shifting</td>
+              <td class="leaveApplicationButtons">
+                <a href=""
+                  ><button style="background-color: #17a2b8">View</button></a
+                >
+              </td>
+              <td class="leaveApplicationButtons">
+                <button title="Approve" style="background-color: #28a745">
+                  Approve
+                </button>
+                <button title="Reject" style="background-color: red">
+                  Reject
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- All Pop up -->
     <!--Employee Username and Password Popup -->
     <div class="popup" id="popup">
       <div class="popup-content">
@@ -857,6 +943,8 @@
         <button type="submit" class="submit-btn">Update</button>
       </form>
     </div>
+
+    <!-- Scripts -->
     <script>
       // view employee details popup
       const viewEmBtn = document.querySelectorAll(".view-em-btn");

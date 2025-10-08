@@ -235,7 +235,8 @@ button.submit-btn:hover {
 #employeeList,
 #activity,
 #approvals,
-#reports {
+#reports,
+#leaveApplications {
   margin: 20px;
   overflow-y: auto;
   position: relative;
@@ -262,13 +263,14 @@ thead th {
   background-color: #ff7810; /* Header background */
   color: white;
   padding: 10px;
-  text-align: left;
+  text-align: center;
   z-index: 2; /* Ensure it stays above rows */
 }
 
 tbody td {
   padding: 10px;
   border-bottom: 1px solid #ddd;
+  text-align: center;
 }
 
 tbody tr:nth-child(even) {
@@ -778,11 +780,17 @@ select {
   position: relative;
 }
 #empUPclose {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid #eee;
   position: absolute;
-  right: 10px;
-  top: 10px;
+  right: 5px;
+  top: 5px;
   cursor: pointer;
-  font-size: 20px;
 }
 #empUpdatePopup form .empUpdatePhoto {
   display: flex;
@@ -793,6 +801,15 @@ select {
 #empUpdatePopup form .empUpdatePhoto img {
   width: 150px;
   height: 150px;
+}
+/* Leave application */
+.leaveApplicationButtons button {
+  border: none;
+  color: white;
+  padding: 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: 500;
 }
 /* custom scrollbar */
 /* width */
