@@ -735,6 +735,54 @@ select {
   align-items: center;
   gap: 5px;
 }
+/* employee delete popup */
+.uniPopup {
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 90;
+}
+.uniPopup .employeeDeleteContainer {
+  padding: 20px;
+  border-radius: 4px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+.uniPopup .employeeDeleteContainer button {
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  border: none;
+  background-color: #ff7810;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+}
+#empUpdatePopup form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+}
+#empUpdatePopup form .empUpdatePhoto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#empUpdatePopup form .empUpdatePhoto img {
+  width: 150px;
+  height: 150px;
+}
 /* custom scrollbar */
 /* width */
 ::-webkit-scrollbar {

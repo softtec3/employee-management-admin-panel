@@ -302,6 +302,7 @@
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
                 <button
+                  onclick="handleDelete('LLC-01')"
                   class="opBtn"
                   title="Delete"
                   style="background-color: red"
@@ -343,6 +344,7 @@
                 </button>
                 <button
                   class="opBtn"
+                  onclick="handleDelete('LLC-02')"
                   title="Delete"
                   style="background-color: red"
                 >
@@ -383,6 +385,7 @@
                 </button>
                 <button
                   class="opBtn"
+                  onclick="handleDelete('LLC-03')"
                   title="Delete"
                   style="background-color: red"
                 >
@@ -673,7 +676,74 @@
         </table>
       </div>
     </div>
+    <!-- Employee Delete popup -->
+    <div class="uniPopup" id="employeeDelete" style="display: none">
+      <form action="" class="employeeDeleteContainer">
+        <input
+          type="hidden"
+          name="deleteEmployeeId"
+          id="deleteEmpInput"
+          value=""
+        />
+        <h3 style="color: red">
+          Delete Employee: <span id="idOfDeleteEmp">LLC-01</span>
+        </h3>
+        <h2>Are you sure..?</h2>
+        <div>
+          <button style="background-color: red">Delete</button>
+          <button id="closeDeleteEmployeePopup" type="button">Cancel</button>
+        </div>
+      </form>
+    </div>
+    <!-- Employee Update popup -->
+    <div class="uniPopup" id="empUpdatePopup" style="display: none">
+      <form>
+        <h2>Employee Signup</h2>
+        <div class="formFlex empUpdatePhoto">
+          <img src="./placeholder.jpg" alt="employee photo" />
+          <div
+            class="form-group"
+            style="justify-content: center; text-align: center"
+          >
+            <p>Name: John Doe</p>
+            <p>ID: LLC-01</p>
+          </div>
+        </div>
 
+        <div class="form-group">
+          <label for="company">Select Company</label>
+          <select id="company" name="company" required>
+            <option value="" style="display: none">-- Select Company --</option>
+            <option value="soft-tech technology">Soft-Tech Technology</option>
+            <option value="soft-tech technology lls">
+              Soft-Tech Technology LLC
+            </option>
+          </select>
+        </div>
+        <div class="formFlex">
+          <div class="form-group">
+            <label for="department">Department</label>
+            <select id="department" name="department" required>
+              <option value="" style="display: none">
+                -- Select Department --
+              </option>
+              <option value="it">IT</option>
+              <option value="sales">Sales</option>
+              <option value="marketing">Marketing</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="position">Position</label>
+            <input type="text" id="position" name="position" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="updateSalary">Salary</label>
+          <input type="text" id="updateSalary" name="updateSalary" required />
+        </div>
+        <button type="submit" class="submit-btn">Update</button>
+      </form>
+    </div>
     <script>
       // view employee details popup
       const viewEmBtn = document.querySelectorAll(".view-em-btn");
@@ -780,6 +850,19 @@
           alert(text + " copied!");
         });
       }
+    </script>
+    <!-- Employee delete popup -->
+    <script>
+      const handleDelete = (id) => {
+        document.getElementById("idOfDeleteEmp").innerText = id;
+        document.getElementById("deleteEmpInput").value = id;
+        document.getElementById("employeeDelete").style.display = "flex";
+      };
+      document
+        .getElementById("closeDeleteEmployeePopup")
+        .addEventListener("click", () => {
+          document.getElementById("employeeDelete").style.display = "none";
+        });
     </script>
   </body>
 </html>
