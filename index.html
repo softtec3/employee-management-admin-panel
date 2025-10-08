@@ -296,6 +296,7 @@
                 </button>
                 <button
                   class="opBtn"
+                  onclick="handleUpdatePopup('LLC-01')"
                   title="Edit"
                   style="background-color: #28a745"
                 >
@@ -337,6 +338,7 @@
                 </button>
                 <button
                   class="opBtn"
+                  onclick="handleUpdatePopup('LLC-02')"
                   title="Edit"
                   style="background-color: #28a745"
                 >
@@ -378,6 +380,7 @@
                 </button>
                 <button
                   class="opBtn"
+                  onclick="handleUpdatePopup('LLC-03')"
                   title="Edit"
                   style="background-color: #28a745"
                 >
@@ -697,19 +700,73 @@
     </div>
     <!-- Employee Update popup -->
     <div class="uniPopup" id="empUpdatePopup" style="display: none">
-      <form>
-        <h2>Employee Signup</h2>
-        <div class="formFlex empUpdatePhoto">
-          <img src="./placeholder.jpg" alt="employee photo" />
-          <div
-            class="form-group"
-            style="justify-content: center; text-align: center"
-          >
-            <p>Name: John Doe</p>
-            <p>ID: LLC-01</p>
+      <form id="" method="post">
+        <input type="hidden" name="updateId" id="updateEmpId" value="" />
+        <span id="empUPclose"><i class="fa fa-solid fa-xmark"></i></span>
+        <h2 style="text-align: center">Employee Update</h2>
+        <div class="formFlex">
+          <img id="emPhoto" src="./placeholder.jpg" alt="employee photo" />
+          <div class="form-group" style="justify-content: center">
+            <label for="employeePhoto">Employee Photo</label>
+            <input
+              type="file"
+              id="employeePhoto"
+              name="employeePhoto"
+              required
+            />
           </div>
         </div>
-
+        <div class="formFlex">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" name="firstName" required />
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="fathersName">Father's Name</label>
+          <input type="text" id="fathersName" name="fathersName" required />
+        </div>
+        <div class="formFlex">
+          <div class="formFlex">
+            <div class="form-group" style="width: auto">
+              <label for="phoneCode">Phone code</label>
+              <select
+                name="phoneCode"
+                id="phoneCode"
+                style="width: 115px; height: 39px"
+              >
+                <option value="+1">USA (+1)</option>
+                <option value="+880">BD (+880)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="phoneNumber">Phone Number</label>
+              <input
+                type="tel"
+                id="phoneNumber"
+                name="phoneNumber"
+                required
+                value="+1"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="dob">Date of Birth</label>
+            <input type="date" id="dob" name="dob" style="height: 39px" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="address">Address</label>
+          <textarea id="address" name="address" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required />
+        </div>
         <div class="form-group">
           <label for="company">Select Company</label>
           <select id="company" name="company" required>
@@ -737,10 +794,66 @@
             <input type="text" id="position" name="position" required />
           </div>
         </div>
-        <div class="form-group">
-          <label for="updateSalary">Salary</label>
-          <input type="text" id="updateSalary" name="updateSalary" required />
+        <div class="formFlex">
+          <div class="form-group">
+            <label for="joiningDate">Joining Date</label>
+            <input
+              type="date"
+              id="joiningDate"
+              name="joiningDate"
+              style="height: 39px"
+            />
+          </div>
+          <div class="form-group">
+            <label for="bloodGroup">Blood Group</label>
+            <select id="bloodGroup" name="bloodGroup" required>
+              <option value="" style="display: none">
+                -- Select Blood Group --
+              </option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
         </div>
+        <fieldset>
+          <legend>Essential Documents</legend>
+          <div class="formFlex">
+            <div class="form-group">
+              <label for="ssnornid">SSN/NID </label>
+              <input type="text" id="ssnornid" name="ssnornid" />
+            </div>
+            <div class="form-group">
+              <label for="ssnornidPhoto">SSN/NID Photo </label>
+              <input type="file" id="ssnornidPhoto" name="ssnornidPhoto" />
+            </div>
+          </div>
+        </fieldset>
+        <fieldset id="additionalDocuments">
+          <legend>Additional Documents</legend>
+          <div class="formFlex">
+            <div class="form-group">
+              <label for="docType">Document Type </label>
+              <input type="text" id="docType" name="docType" />
+            </div>
+            <div class="form-group">
+              <label for="documentPhoto">Document Photo </label>
+              <input type="file" id="documentPhoto" name="documentPhoto" />
+            </div>
+            <div
+              id="addBtn"
+              style="display: flex; align-items: center; cursor: pointer"
+            >
+              <i class="fa-solid fa-plus" style="margin-top: 20px"></i>
+            </div>
+          </div>
+        </fieldset>
+
         <button type="submit" class="submit-btn">Update</button>
       </form>
     </div>
@@ -863,6 +976,16 @@
         .addEventListener("click", () => {
           document.getElementById("employeeDelete").style.display = "none";
         });
+    </script>
+    <!-- Employee Update popup -->
+    <script>
+      const handleUpdatePopup = (id) => {
+        document.getElementById("updateEmpId").value = id;
+        document.getElementById("empUpdatePopup").style.display = "flex";
+      };
+      document.getElementById("empUPclose").addEventListener("click", () => {
+        document.getElementById("empUpdatePopup").style.display = "none";
+      });
     </script>
   </body>
 </html>

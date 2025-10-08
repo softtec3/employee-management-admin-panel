@@ -768,10 +768,21 @@ select {
   color: white;
   cursor: pointer;
 }
+
 #empUpdatePopup form {
   background-color: white;
   padding: 20px;
   border-radius: 5px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+#empUPclose {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+  font-size: 20px;
 }
 #empUpdatePopup form .empUpdatePhoto {
   display: flex;
