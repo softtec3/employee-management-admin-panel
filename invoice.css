@@ -171,5 +171,6 @@ td {
   .section {
     max-height: 75vh;
     min-height: 75vh;
+    padding: 0px;
   }
 }
