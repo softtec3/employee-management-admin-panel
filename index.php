@@ -5,8 +5,6 @@ if (!$_SESSION["user_id"] || !$_SESSION["user_role"]) {
 }
 include_once("./php/db_connect.php");
 include_once("./php/logout.php");
-echo $_SESSION["user_id"];
-echo $_SESSION["user_role"];
 ?>
 
 <!DOCTYPE html>
@@ -26,6 +24,10 @@ echo $_SESSION["user_role"];
   <!-- Sidebar -->
   <div class="sidebar">
     <div class="logo">Admin Panel</div>
+    <div class="loginUserDetails">
+      <p><?php echo $_SESSION["user_id"] ?></p>
+      <p style="text-transform: uppercase;"><?php echo $_SESSION["user_role"] ?></p>
+    </div>
     <button class="nav-btn active" data-target="employeeSignUp">
       <i class="fa-solid fa-user-plus"></i> Employee Signup
     </button>
@@ -49,9 +51,16 @@ echo $_SESSION["user_role"];
     <button class="nav-btn" data-target="leaveApplications">
       <i class="fa-solid fa-plane-departure"></i> Leave Applications
     </button>
-    <button id="paymentUSBtn" class="nav-btn" data-target="paymentUS">
-      <i class="fa-solid fa-file-invoice-dollar"></i> Payment-US
+    <?php
+    if ($_SESSION["user_role"] && $_SESSION["user_role"] == "super-admin") {
+      echo "
+        <button id='paymentUSBtn' class='nav-btn' data-target='paymentUS'>
+      <i class='fa-solid fa-file-invoice-dollar'></i> Payment-US
     </button>
+        ";
+    }
+    ?>
+
     <a href="./index.php?logout"> <i class="fa-solid fa-right-from-bracket"></i> Logout </a>
   </div>
 
@@ -647,19 +656,29 @@ echo $_SESSION["user_role"];
 
   <!-- All Pop up -->
   <!-- Payment-US -->
-  <div id="paymentUS" style="display: none">
-    <form action="" method="post">
-      <a href="./" id="passkeyFormCloseBtn"><i class="fa fa-solid fa-xmark"></i></a>
+  <?php
+  if ($_SESSION["user_role"] && $_SESSION["user_role"] == "super-admin") {
+
+    echo "
+      <div id='paymentUS' style='display: none'>
+    <form action='./php/passkey_verification.php' method='post'>
+      <a href='./' id='passkeyFormCloseBtn'><i class='fa fa-solid fa-xmark'></i></a>
       <h3>Passkey Login</h3>
-      <div class="form-group">
-        <label for="passkey">Enter Passkey</label>
-        <input type="number" name="passkey" />
+      <div class='form-group'>
+        <label for='passkey'>Enter Passkey</label>
+        <input type='number' name='passkey' required/>
       </div>
-      <div class="form-group">
-        <button type="submit">Submit</button>
+      <div class='form-group'>
+        <button type='submit'>Submit</button>
       </div>
     </form>
   </div>
+      
+      ";
+  }
+
+  ?>
+
   <!--Employee Username and Password Popup -->
   <div class="popup" id="popup">
     <div class="popup-content">
