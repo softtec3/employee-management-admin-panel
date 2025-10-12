@@ -1,826 +1,66 @@
+<?php
+session_start();
+if (!$_SESSION["user_id"] || !$_SESSION["user_role"]) {
+  header("Location: ./login.php");
+}
+include_once("./php/db_connect.php");
+include_once("./php/logout.php");
+echo $_SESSION["user_id"];
+echo $_SESSION["user_role"];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Panel</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    />
-    <link rel="stylesheet" href="./style.css" />
-  </head>
-  <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="logo">Admin Panel</div>
-      <button class="nav-btn active" data-target="employeeSignUp">
-        <i class="fa-solid fa-user-plus"></i> Employee Signup
-      </button>
-      <button class="nav-btn" data-target="assignTask">
-        <i class="fa-solid fa-tasks"></i> Assign Task
-      </button>
-      <button class="nav-btn" data-target="activity">
-        <i class="fas fa-history"></i>
-        Activity
-      </button>
-      <button class="nav-btn" data-target="approvals">
-        <i class="fas fa-check-circle"></i> Approvals
-      </button>
-      <button class="nav-btn" data-target="reports">
-        <i class="fas fa-chart-line"></i> Reports
-      </button>
 
-      <button class="nav-btn" data-target="employeeList">
-        <i class="fa-solid fa-users"></i> Employees
-      </button>
-      <button class="nav-btn" data-target="leaveApplications">
-        <i class="fa-solid fa-plane-departure"></i> Leave Applications
-      </button>
-      <button id="paymentUSBtn" class="nav-btn" data-target="paymentUS">
-        <i class="fa-solid fa-file-invoice-dollar"></i> Payment-US
-      </button>
-      <a href=""> <i class="fa-solid fa-right-from-bracket"></i> Logout </a>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
 
-    <!-- Main Content -->
-    <div class="main-content">
-      <!-- Employee Signup -->
-      <div id="employeeSignUp" class="content-section active">
-        <h2>Employee Signup</h2>
-        <form id="signupForm">
-          <div class="formFlex">
-            <img id="emPhoto" src="./placeholder.jpg" alt="employee photo" />
-            <div class="form-group" style="justify-content: center">
-              <label for="employeePhoto">Employee Photo</label>
-              <input
-                type="file"
-                id="employeePhoto"
-                name="employeePhoto"
-                required
-              />
-            </div>
-          </div>
-          <div class="formFlex">
-            <div class="form-group">
-              <label for="firstName">First Name</label>
-              <input type="text" id="firstName" name="firstName" required />
-            </div>
-            <div class="form-group">
-              <label for="lastName">Last Name</label>
-              <input type="text" id="lastName" name="lastName" required />
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="fathersName">Father's Name</label>
-            <input type="text" id="fathersName" name="fathersName" required />
-          </div>
-          <div class="formFlex">
-            <div class="formFlex">
-              <div class="form-group" style="width: auto">
-                <label for="phoneCode">Phone code</label>
-                <select
-                  name="phoneCode"
-                  id="phoneCode"
-                  style="width: 115px; height: 39px"
-                >
-                  <option value="+1">USA (+1)</option>
-                  <option value="+880">BD (+880)</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="phoneNumber">Phone Number</label>
-                <input
-                  type="tel"
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  required
-                  value="+1"
-                />
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="dob">Date of Birth</label>
-              <input type="date" id="dob" name="dob" style="height: 39px" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="address">Address</label>
-            <textarea id="address" name="address" rows="2"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required />
-          </div>
-          <div class="form-group">
-            <label for="company">Select Company</label>
-            <select id="company" name="company" required>
-              <option value="" style="display: none">
-                -- Select Company --
-              </option>
-              <option value="soft-tech technology">Soft-Tech Technology</option>
-              <option value="soft-tech technology lls">
-                Soft-Tech Technology LLC
-              </option>
-            </select>
-          </div>
-          <div class="formFlex">
-            <div class="form-group">
-              <label for="department">Department</label>
-              <select id="department" name="department" required>
-                <option value="" style="display: none">
-                  -- Select Department --
-                </option>
-                <option value="it">IT</option>
-                <option value="sales">Sales</option>
-                <option value="marketing">Marketing</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="position">Position</label>
-              <input type="text" id="position" name="position" required />
-            </div>
-          </div>
-          <div class="formFlex">
-            <div class="form-group">
-              <label for="joiningDate">Joining Date</label>
-              <input
-                type="date"
-                id="joiningDate"
-                name="joiningDate"
-                style="height: 39px"
-              />
-            </div>
-            <div class="form-group">
-              <label for="bloodGroup">Blood Group</label>
-              <select id="bloodGroup" name="bloodGroup" required>
-                <option value="" style="display: none">
-                  -- Select Blood Group --
-                </option>
-                <option value="A+">A+</option>
-                <option value="A-">A-</option>
-                <option value="B+">B+</option>
-                <option value="B-">B-</option>
-                <option value="AB+">AB+</option>
-                <option value="AB-">AB-</option>
-                <option value="O+">O+</option>
-                <option value="O-">O-</option>
-              </select>
-            </div>
-          </div>
-          <fieldset>
-            <legend>Essential Documents</legend>
-            <div class="formFlex">
-              <div class="form-group">
-                <label for="ssnornid">SSN/NID </label>
-                <input type="text" id="ssnornid" name="ssnornid" />
-              </div>
-              <div class="form-group">
-                <label for="ssnornidPhoto">SSN/NID Photo </label>
-                <input type="file" id="ssnornidPhoto" name="ssnornidPhoto" />
-              </div>
-            </div>
-          </fieldset>
-          <fieldset id="additionalDocuments">
-            <legend>Additional Documents</legend>
-            <div class="formFlex">
-              <div class="form-group">
-                <label for="docType">Document Type </label>
-                <input type="text" id="docType" name="docType" />
-              </div>
-              <div class="form-group">
-                <label for="documentPhoto">Document Photo </label>
-                <input type="file" id="documentPhoto" name="documentPhoto" />
-              </div>
-              <div
-                id="addBtn"
-                style="display: flex; align-items: center; cursor: pointer"
-              >
-                <i class="fa-solid fa-plus" style="margin-top: 20px"></i>
-              </div>
-            </div>
-          </fieldset>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">Admin Panel</div>
+    <button class="nav-btn active" data-target="employeeSignUp">
+      <i class="fa-solid fa-user-plus"></i> Employee Signup
+    </button>
+    <button class="nav-btn" data-target="assignTask">
+      <i class="fa-solid fa-tasks"></i> Assign Task
+    </button>
+    <button class="nav-btn" data-target="activity">
+      <i class="fas fa-history"></i>
+      Activity
+    </button>
+    <button class="nav-btn" data-target="approvals">
+      <i class="fas fa-check-circle"></i> Approvals
+    </button>
+    <button class="nav-btn" data-target="reports">
+      <i class="fas fa-chart-line"></i> Reports
+    </button>
 
-          <button type="submit" class="submit-btn">Sign Up</button>
-        </form>
-      </div>
+    <button class="nav-btn" data-target="employeeList">
+      <i class="fa-solid fa-users"></i> Employees
+    </button>
+    <button class="nav-btn" data-target="leaveApplications">
+      <i class="fa-solid fa-plane-departure"></i> Leave Applications
+    </button>
+    <button id="paymentUSBtn" class="nav-btn" data-target="paymentUS">
+      <i class="fa-solid fa-file-invoice-dollar"></i> Payment-US
+    </button>
+    <a href="./index.php?logout"> <i class="fa-solid fa-right-from-bracket"></i> Logout </a>
+  </div>
 
-      <!-- Assign Task -->
-      <div id="assignTask" class="content-section">
-        <h2>Assign Task</h2>
-        <form id="taskForm">
-          <div class="form-group">
-            <label for="employeeId">Employee Id</label>
-            <select id="employeeId" name="employeeId" required>
-              <option value="" style="display: none">
-                -- Select employee Id --
-              </option>
-              <option value="llc-01">LLC-01</option>
-              <option value="llc-02">LLC-02</option>
-              <option value="llc-03">LLC-03</option>
-              <option value="llc-04">LLC-04</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="taskTitle">Task Title</label>
-            <input type="text" id="taskTitle" name="taskTitle" required />
-          </div>
-
-          <div class="form-group">
-            <label for="taskDescription">Task Description</label>
-            <textarea
-              id="taskDescription"
-              name="taskDescription"
-              rows="3"
-            ></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="deadline">Deadline</label>
-            <input type="date" id="deadline" name="deadline" required />
-          </div>
-
-          <button type="submit" class="submit-btn">Assign Task</button>
-        </form>
-      </div>
-    </div>
-    <!-- Employee list -->
-    <div id="employeeList" class="content-section">
-      <div class="flexJustify">
-        <h2>Employees</h2>
-        <form action="" class="inputFrom">
-          <input
-            type="search"
-            name="searchEmployeeId"
-            id="searchEmployee"
-            placeholder="Search by ID"
-            required
-          />
-          <button type="submit" class="searchBtn">Search</button>
-        </form>
-      </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Photo</th>
-              <th>Full Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Department</th>
-              <th>Position</th>
-              <th>Joining Date</th>
-              <th>Salary</th>
-              <th>Operation</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>LLC-01</td>
-              <td>
-                <img
-                  class="tablePhotoEmployee"
-                  src="./placeholder.jpg"
-                  alt=""
-                />
-              </td>
-              <td>John Doe</td>
-              <td>john@example.com</td>
-              <td>+880123456789</td>
-              <td>IT</td>
-              <td>Developer</td>
-              <td>2025-01-15</td>
-              <td>$1500</td>
-              <td>
-                <button
-                  class="opBtn view-em-btn"
-                  style="background-color: #17a2b8"
-                  title="View"
-                >
-                  <i class="fa-solid fa-eye"></i>
-                </button>
-                <button
-                  class="opBtn"
-                  onclick="handleUpdatePopup('LLC-01')"
-                  title="Edit"
-                  style="background-color: #28a745"
-                >
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button
-                  onclick="handleDelete('LLC-01')"
-                  class="opBtn"
-                  title="Delete"
-                  style="background-color: red"
-                >
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>LLC-02</td>
-              <td>
-                <img
-                  class="tablePhotoEmployee"
-                  src="./placeholder.jpg"
-                  alt=""
-                />
-              </td>
-              <td>Jane Smith</td>
-              <td>jane@example.com</td>
-              <td>+880198765432</td>
-              <td>HR</td>
-              <td>Manager</td>
-              <td>2024-12-01</td>
-              <td>$1800</td>
-              <td>
-                <button
-                  class="opBtn view-em-btn"
-                  style="background-color: #17a2b8"
-                  title="View"
-                >
-                  <i class="fa-solid fa-eye"></i>
-                </button>
-                <button
-                  class="opBtn"
-                  onclick="handleUpdatePopup('LLC-02')"
-                  title="Edit"
-                  style="background-color: #28a745"
-                >
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button
-                  class="opBtn"
-                  onclick="handleDelete('LLC-02')"
-                  title="Delete"
-                  style="background-color: red"
-                >
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>LLC-03</td>
-              <td>
-                <img
-                  class="tablePhotoEmployee"
-                  src="./placeholder.jpg"
-                  alt=""
-                />
-              </td>
-              <td>Jane Smith</td>
-              <td>jane@example.com</td>
-              <td>+880198765432</td>
-              <td>HR</td>
-              <td>Manager</td>
-              <td>2024-12-01</td>
-              <td>$1800</td>
-              <td>
-                <button
-                  class="opBtn view-em-btn"
-                  style="background-color: #17a2b8"
-                  title="View"
-                >
-                  <i class="fa-solid fa-eye"></i>
-                </button>
-                <button
-                  class="opBtn"
-                  onclick="handleUpdatePopup('LLC-03')"
-                  title="Edit"
-                  style="background-color: #28a745"
-                >
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button
-                  class="opBtn"
-                  onclick="handleDelete('LLC-03')"
-                  title="Delete"
-                  style="background-color: red"
-                >
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <!-- Activity -->
-    <section id="activity" class="content-section hidden">
-      <div class="flexJustify">
-        <h2>Employee Task Activity</h2>
-        <select name="filter" id="filter" class="filter">
-          <option value="" style="display: none">Filter by</option>
-          <option value="inProgress">In progress</option>
-          <option value="pending">Pending</option>
-          <option value="accepted">Accepted</option>
-          <option value="Completed">Completed</option>
-        </select>
-      </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Employee ID</th>
-              <th>Employee Name</th>
-              <th>Task</th>
-              <th>Assigned Date</th>
-              <th>Deadline</th>
-              <th>Status</th>
-              <th>Completed Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>LLC-01</td>
-              <td>John Doe</td>
-              <td>Prepare Monthly Report</td>
-              <td>2025-09-20</td>
-              <td>2025-09-25</td>
-              <td>In Progress</td>
-              <td>---</td>
-            </tr>
-            <tr>
-              <td>LLC-02</td>
-              <td>Jane Smith</td>
-              <td>Update Client Database</td>
-              <td>2025-09-22</td>
-              <td>2025-09-28</td>
-              <td>Completed</td>
-              <td>2025-10-19</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-    <!-- Approval Section -->
-    <div id="approvals" class="content-section hidden">
-      <h2>Employee Approvals</h2>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Employee ID</th>
-              <th>Employee Name</th>
-              <th>Email</th>
-              <th>Full Updating</th>
-              <th>Submitted Date</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>LLC-01</td>
-              <td>John Doe</td>
-              <td>john@example.com</td>
-              <td>
-                <a
-                  href="./profile.php?profileId=1"
-                  target="_blank"
-                  class="view-doc-btn"
-                >
-                  View
-                </a>
-              </td>
-              <td>2025-09-25</td>
-              <td>Pending</td>
-              <td>
-                <button class="approve-btn">Approve</button>
-                <button class="reject-btn">Reject</button>
-              </td>
-            </tr>
-            <tr>
-              <td>LLC-02</td>
-              <td>Jane Smith</td>
-              <td>jane@example.com</td>
-              <td>
-                <a
-                  href="./profile.php?profileId=2"
-                  target="_blank"
-                  class="view-doc-btn"
-                >
-                  View
-                </a>
-              </td>
-              <td>2025-09-24</td>
-              <td>Pending</td>
-              <td>
-                <button class="approve-btn">Approve</button>
-                <button class="reject-btn">Reject</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <!-- Report section -->
-    <div id="reports" class="content-section hidden">
-      <h2>Reports & Analytics</h2>
-      <div class="analytics-cards">
-        <div class="card">
-          <h3>Total Employees</h3>
-          <p>120</p>
-        </div>
-        <div class="card">
-          <h3>Tasks Completed</h3>
-          <p>85%</p>
-        </div>
-        <div class="card">
-          <h3>Pending Approvals</h3>
-          <p>5</p>
-        </div>
-      </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Employee ID</th>
-              <th>Employee Name</th>
-              <th>Total Tasks</th>
-              <th>Tasks Completed</th>
-              <th>Tasks In Progress</th>
-              <th>Tasks Pending</th>
-              <th>Last Active</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>LLC-01</td>
-              <td>John Doe</td>
-              <td>10</td>
-              <td>7</td>
-              <td>2</td>
-              <td>1</td>
-              <td>2025-09-25</td>
-            </tr>
-            <tr>
-              <td>LLC-02</td>
-              <td>Jane Smith</td>
-              <td>8</td>
-              <td>5</td>
-              <td>3</td>
-              <td>0</td>
-              <td>2025-09-24</td>
-            </tr>
-            <tr>
-              <td>LLC-03</td>
-              <td>Bob Brown</td>
-              <td>6</td>
-              <td>4</td>
-              <td>1</td>
-              <td>1</td>
-              <td>2025-09-23</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <!-- Leave applications -->
-    <div id="leaveApplications" class="content-section hidden">
-      <h2>Leave Applications</h2>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Full Name</th>
-              <th>From</th>
-              <th>To</th>
-              <th>Reason</th>
-              <th>Application</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>LLC-01</td>
-              <td>John Doe</td>
-              <td>10/08/2025</td>
-              <td>15/08/2025</td>
-              <td>For final examination</td>
-              <td class="leaveApplicationButtons">
-                <a href=""
-                  ><button style="background-color: #17a2b8">View</button></a
-                >
-              </td>
-              <td class="leaveApplicationButtons">
-                <button title="Approve" style="background-color: #28a745">
-                  Approve
-                </button>
-                <button title="Reject" style="background-color: red">
-                  Reject
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>LLC-02</td>
-              <td>John Doe</td>
-              <td>10/08/2025</td>
-              <td>15/08/2025</td>
-              <td>For Sickness</td>
-              <td class="leaveApplicationButtons">
-                <a href=""
-                  ><button style="background-color: #17a2b8">View</button></a
-                >
-              </td>
-              <td class="leaveApplicationButtons">
-                <button title="Approve" style="background-color: #28a745">
-                  Approve
-                </button>
-                <button title="Reject" style="background-color: red">
-                  Reject
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>LLC-03</td>
-              <td>John Doe</td>
-              <td>10/08/2025</td>
-              <td>15/08/2025</td>
-              <td>For shifting</td>
-              <td class="leaveApplicationButtons">
-                <a href=""
-                  ><button style="background-color: #17a2b8">View</button></a
-                >
-              </td>
-              <td class="leaveApplicationButtons">
-                <button title="Approve" style="background-color: #28a745">
-                  Approve
-                </button>
-                <button title="Reject" style="background-color: red">
-                  Reject
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- All Pop up -->
-    <!-- Payment-US -->
-    <div id="paymentUS" style="display: none">
-      <form action="" method="post">
-        <a href="./" id="passkeyFormCloseBtn"
-          ><i class="fa fa-solid fa-xmark"></i
-        ></a>
-        <h3>Passkey Login</h3>
-        <div class="form-group">
-          <label for="passkey">Enter Passkey</label>
-          <input type="number" name="passkey" />
-        </div>
-        <div class="form-group">
-          <button type="submit">Submit</button>
-        </div>
-      </form>
-    </div>
-    <!--Employee Username and Password Popup -->
-    <div class="popup" id="popup">
-      <div class="popup-content">
-        <span class="close" id="closePopup">&times;</span>
-        <h3>Employee Created</h3>
-        <div class="info">
-          <span>Username: user123</span>
-          <i class="fa-solid fa-copy" onclick="copyToClipboard('user123')"></i>
-        </div>
-        <div class="info">
-          <span>Password: pass456</span>
-          <i class="fa-solid fa-copy" onclick="copyToClipboard('pass456')"></i>
-        </div>
-      </div>
-    </div>
-    <!-- Doc popup -->
-    <div class="doc-popup" id="docPopup">
-      <div class="doc-popup-content">
-        <span class="close" id="closeDocPopup"
-          ><i class="fa fa-xmark"></i
-        ></span>
-        <iframe
-          src=""
-          title="doc"
-          id="docFrame"
-          width="100%"
-          height="500px"
-        ></iframe>
-      </div>
-    </div>
-    <!-- View employee details popup -->
-    <div id="employeeDetailsPopup">
-      <div class="employeeDetailsContent" id="employeeDetailsContent">
-        <span id="emdc-close"><i class="fa-solid fa-xmark"></i></span>
-        <img src="./placeholder.jpg" alt="employee Image" />
-        <table>
-          <tr>
-            <td style="font-weight: bold">ID <span>:</span></td>
-            <td>LLC-01</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold">Full Name <span>:</span></td>
-            <td>John Doe</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold">Father's Name <span>:</span></td>
-            <td>John Doe</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold">Phone Number <span>:</span></td>
-            <td>+8801318195591</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold">DOB <span>:</span></td>
-            <td>03/04/2005</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold">Address <span>:</span></td>
-            <td>Jashore, Bangladesh</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold">Email <span>:</span></td>
-            <td>john@gmail.com</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold">Company <span>:</span></td>
-            <td>Soft-Tech Technology LLC</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold">Department <span>:</span></td>
-            <td>Sales</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold">Position <span>:</span></td>
-            <td>Chief Operating Officer</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold">Joining Date <span>:</span></td>
-            <td>12/12/2024</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold">Blood Group <span>:</span></td>
-            <td>A+</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold">NID <span>:</span></td>
-            <td>
-              <a href="./degree.pdf" target="_blank" class="empDocViewBtn"
-                >View Document</a
-              >
-            </td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold">SSN <span>:</span></td>
-            <td>
-              <a href="./degree.pdf" target="_blank" class="empDocViewBtn"
-                >View Document</a
-              >
-            </td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold">Certificate <span>:</span></td>
-            <td>
-              <a href="./degree.pdf" target="_blank" class="empDocViewBtn"
-                >View Document</a
-              >
-            </td>
-          </tr>
-        </table>
-        <!-- Need to change the link extension .html to .php -->
-        <a
-          href="./employeeView.html?employeeId=LLC-01"
-          target="_blank"
-          class="btn"
-          style="color: white"
-          >View & Print</a
-        >
-      </div>
-    </div>
-    <!-- Employee Delete popup -->
-    <div class="uniPopup" id="employeeDelete" style="display: none">
-      <form action="" class="employeeDeleteContainer">
-        <input
-          type="hidden"
-          name="deleteEmployeeId"
-          id="deleteEmpInput"
-          value=""
-        />
-        <h3 style="color: red">
-          Delete Employee: <span id="idOfDeleteEmp">LLC-01</span>
-        </h3>
-        <h2>Are you sure..?</h2>
-        <div>
-          <button style="background-color: red">Delete</button>
-          <button id="closeDeleteEmployeePopup" type="button">Cancel</button>
-        </div>
-      </form>
-    </div>
-    <!-- Employee Update popup -->
-    <div class="uniPopup" id="empUpdatePopup" style="display: none">
-      <form id="" method="post">
-        <input type="hidden" name="updateId" id="updateEmpId" value="" />
-        <span id="empUPclose"><i class="fa fa-solid fa-xmark"></i></span>
-        <h2 style="text-align: center">Employee Update</h2>
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Employee Signup -->
+    <div id="employeeSignUp" class="content-section active">
+      <h2>Employee Signup</h2>
+      <form id="signupForm">
         <div class="formFlex">
           <img id="emPhoto" src="./placeholder.jpg" alt="employee photo" />
           <div class="form-group" style="justify-content: center">
@@ -829,8 +69,7 @@
               type="file"
               id="employeePhoto"
               name="employeePhoto"
-              required
-            />
+              required />
           </div>
         </div>
         <div class="formFlex">
@@ -854,8 +93,7 @@
               <select
                 name="phoneCode"
                 id="phoneCode"
-                style="width: 115px; height: 39px"
-              >
+                style="width: 115px; height: 39px">
                 <option value="+1">USA (+1)</option>
                 <option value="+880">BD (+880)</option>
               </select>
@@ -867,8 +105,7 @@
                 id="phoneNumber"
                 name="phoneNumber"
                 required
-                value="+1"
-              />
+                value="+1" />
             </div>
           </div>
           <div class="form-group">
@@ -887,7 +124,9 @@
         <div class="form-group">
           <label for="company">Select Company</label>
           <select id="company" name="company" required>
-            <option value="" style="display: none">-- Select Company --</option>
+            <option value="" style="display: none">
+              -- Select Company --
+            </option>
             <option value="soft-tech technology">Soft-Tech Technology</option>
             <option value="soft-tech technology lls">
               Soft-Tech Technology LLC
@@ -918,8 +157,7 @@
               type="date"
               id="joiningDate"
               name="joiningDate"
-              style="height: 39px"
-            />
+              style="height: 39px" />
           </div>
           <div class="form-group">
             <label for="bloodGroup">Blood Group</label>
@@ -964,66 +202,794 @@
             </div>
             <div
               id="addBtn"
-              style="display: flex; align-items: center; cursor: pointer"
-            >
+              style="display: flex; align-items: center; cursor: pointer">
               <i class="fa-solid fa-plus" style="margin-top: 20px"></i>
             </div>
           </div>
         </fieldset>
 
-        <button type="submit" class="submit-btn">Update</button>
+        <button type="submit" class="submit-btn">Sign Up</button>
       </form>
     </div>
 
-    <!-- Scripts -->
-    <script>
-      // view employee details popup
-      const viewEmBtn = document.querySelectorAll(".view-em-btn");
-      const employeeDetailsPopup = document.getElementById(
-        "employeeDetailsPopup"
-      );
-      const emdpCloseBtn = document.getElementById("emdc-close");
-      viewEmBtn.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          console.log("Click");
-          employeeDetailsPopup.style.display = "flex";
-        });
-      });
-      emdpCloseBtn.addEventListener("click", () => {
-        employeeDetailsPopup.style.display = "none";
-      });
-      employeeDetailsPopup.addEventListener("click", (e) => {
-        employeeDetailsPopup.style.display = "none";
-      });
-      document
-        .getElementById("employeeDetailsContent")
-        .addEventListener("click", (e) => {
-          e.stopPropagation();
-        });
-      // Img url
-      const emPhoto = document.getElementById("emPhoto");
-      const employeePhoto = document.getElementById("employeePhoto");
-      employeePhoto.addEventListener("change", (e) => {
-        const url = URL.createObjectURL(e.target.files[0]);
-        emPhoto.src = url;
-      });
+    <!-- Assign Task -->
+    <div id="assignTask" class="content-section">
+      <h2>Assign Task</h2>
+      <form id="taskForm">
+        <div class="form-group">
+          <label for="employeeId">Employee Id</label>
+          <select id="employeeId" name="employeeId" required>
+            <option value="" style="display: none">
+              -- Select employee Id --
+            </option>
+            <option value="llc-01">LLC-01</option>
+            <option value="llc-02">LLC-02</option>
+            <option value="llc-03">LLC-03</option>
+            <option value="llc-04">LLC-04</option>
+          </select>
+        </div>
 
-      // Phone code
-      const phoneCode = document.getElementById("phoneCode");
-      const phoneNumber = document.getElementById("phoneNumber");
-      phoneCode.addEventListener("change", (e) => {
-        console.log(e.target.value);
-        phoneNumber.value = e.target.value;
+        <div class="form-group">
+          <label for="taskTitle">Task Title</label>
+          <input type="text" id="taskTitle" name="taskTitle" required />
+        </div>
+
+        <div class="form-group">
+          <label for="taskDescription">Task Description</label>
+          <textarea
+            id="taskDescription"
+            name="taskDescription"
+            rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="deadline">Deadline</label>
+          <input type="date" id="deadline" name="deadline" required />
+        </div>
+
+        <button type="submit" class="submit-btn">Assign Task</button>
+      </form>
+    </div>
+  </div>
+  <!-- Employee list -->
+  <div id="employeeList" class="content-section">
+    <div class="flexJustify">
+      <h2>Employees</h2>
+      <form action="" class="inputFrom">
+        <input
+          type="search"
+          name="searchEmployeeId"
+          id="searchEmployee"
+          placeholder="Search by ID"
+          required />
+        <button type="submit" class="searchBtn">Search</button>
+      </form>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Photo</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Department</th>
+            <th>Position</th>
+            <th>Joining Date</th>
+            <th>Salary</th>
+            <th>Operation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>LLC-01</td>
+            <td>
+              <img
+                class="tablePhotoEmployee"
+                src="./placeholder.jpg"
+                alt="" />
+            </td>
+            <td>John Doe</td>
+            <td>john@example.com</td>
+            <td>+880123456789</td>
+            <td>IT</td>
+            <td>Developer</td>
+            <td>2025-01-15</td>
+            <td>$1500</td>
+            <td>
+              <button
+                class="opBtn view-em-btn"
+                style="background-color: #17a2b8"
+                title="View">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+              <button
+                class="opBtn"
+                onclick="handleUpdatePopup('LLC-01')"
+                title="Edit"
+                style="background-color: #28a745">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button
+                onclick="handleDelete('LLC-01')"
+                class="opBtn"
+                title="Delete"
+                style="background-color: red">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td>LLC-02</td>
+            <td>
+              <img
+                class="tablePhotoEmployee"
+                src="./placeholder.jpg"
+                alt="" />
+            </td>
+            <td>Jane Smith</td>
+            <td>jane@example.com</td>
+            <td>+880198765432</td>
+            <td>HR</td>
+            <td>Manager</td>
+            <td>2024-12-01</td>
+            <td>$1800</td>
+            <td>
+              <button
+                class="opBtn view-em-btn"
+                style="background-color: #17a2b8"
+                title="View">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+              <button
+                class="opBtn"
+                onclick="handleUpdatePopup('LLC-02')"
+                title="Edit"
+                style="background-color: #28a745">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button
+                class="opBtn"
+                onclick="handleDelete('LLC-02')"
+                title="Delete"
+                style="background-color: red">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td>LLC-03</td>
+            <td>
+              <img
+                class="tablePhotoEmployee"
+                src="./placeholder.jpg"
+                alt="" />
+            </td>
+            <td>Jane Smith</td>
+            <td>jane@example.com</td>
+            <td>+880198765432</td>
+            <td>HR</td>
+            <td>Manager</td>
+            <td>2024-12-01</td>
+            <td>$1800</td>
+            <td>
+              <button
+                class="opBtn view-em-btn"
+                style="background-color: #17a2b8"
+                title="View">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+              <button
+                class="opBtn"
+                onclick="handleUpdatePopup('LLC-03')"
+                title="Edit"
+                style="background-color: #28a745">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button
+                class="opBtn"
+                onclick="handleDelete('LLC-03')"
+                title="Delete"
+                style="background-color: red">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Activity -->
+  <section id="activity" class="content-section hidden">
+    <div class="flexJustify">
+      <h2>Employee Task Activity</h2>
+      <select name="filter" id="filter" class="filter">
+        <option value="" style="display: none">Filter by</option>
+        <option value="inProgress">In progress</option>
+        <option value="pending">Pending</option>
+        <option value="accepted">Accepted</option>
+        <option value="Completed">Completed</option>
+      </select>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Employee ID</th>
+            <th>Employee Name</th>
+            <th>Task</th>
+            <th>Assigned Date</th>
+            <th>Deadline</th>
+            <th>Status</th>
+            <th>Completed Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>LLC-01</td>
+            <td>John Doe</td>
+            <td>Prepare Monthly Report</td>
+            <td>2025-09-20</td>
+            <td>2025-09-25</td>
+            <td>In Progress</td>
+            <td>---</td>
+          </tr>
+          <tr>
+            <td>LLC-02</td>
+            <td>Jane Smith</td>
+            <td>Update Client Database</td>
+            <td>2025-09-22</td>
+            <td>2025-09-28</td>
+            <td>Completed</td>
+            <td>2025-10-19</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <!-- Approval Section -->
+  <div id="approvals" class="content-section hidden">
+    <h2>Employee Approvals</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Employee ID</th>
+            <th>Employee Name</th>
+            <th>Email</th>
+            <th>Full Updating</th>
+            <th>Submitted Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>LLC-01</td>
+            <td>John Doe</td>
+            <td>john@example.com</td>
+            <td>
+              <a
+                href="./profile.php?profileId=1"
+                target="_blank"
+                class="view-doc-btn">
+                View
+              </a>
+            </td>
+            <td>2025-09-25</td>
+            <td>Pending</td>
+            <td>
+              <button class="approve-btn">Approve</button>
+              <button class="reject-btn">Reject</button>
+            </td>
+          </tr>
+          <tr>
+            <td>LLC-02</td>
+            <td>Jane Smith</td>
+            <td>jane@example.com</td>
+            <td>
+              <a
+                href="./profile.php?profileId=2"
+                target="_blank"
+                class="view-doc-btn">
+                View
+              </a>
+            </td>
+            <td>2025-09-24</td>
+            <td>Pending</td>
+            <td>
+              <button class="approve-btn">Approve</button>
+              <button class="reject-btn">Reject</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Report section -->
+  <div id="reports" class="content-section hidden">
+    <h2>Reports & Analytics</h2>
+    <div class="analytics-cards">
+      <div class="card">
+        <h3>Total Employees</h3>
+        <p>120</p>
+      </div>
+      <div class="card">
+        <h3>Tasks Completed</h3>
+        <p>85%</p>
+      </div>
+      <div class="card">
+        <h3>Pending Approvals</h3>
+        <p>5</p>
+      </div>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Employee ID</th>
+            <th>Employee Name</th>
+            <th>Total Tasks</th>
+            <th>Tasks Completed</th>
+            <th>Tasks In Progress</th>
+            <th>Tasks Pending</th>
+            <th>Last Active</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>LLC-01</td>
+            <td>John Doe</td>
+            <td>10</td>
+            <td>7</td>
+            <td>2</td>
+            <td>1</td>
+            <td>2025-09-25</td>
+          </tr>
+          <tr>
+            <td>LLC-02</td>
+            <td>Jane Smith</td>
+            <td>8</td>
+            <td>5</td>
+            <td>3</td>
+            <td>0</td>
+            <td>2025-09-24</td>
+          </tr>
+          <tr>
+            <td>LLC-03</td>
+            <td>Bob Brown</td>
+            <td>6</td>
+            <td>4</td>
+            <td>1</td>
+            <td>1</td>
+            <td>2025-09-23</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Leave applications -->
+  <div id="leaveApplications" class="content-section hidden">
+    <h2>Leave Applications</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Full Name</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Reason</th>
+            <th>Application</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>LLC-01</td>
+            <td>John Doe</td>
+            <td>10/08/2025</td>
+            <td>15/08/2025</td>
+            <td>For final examination</td>
+            <td class="leaveApplicationButtons">
+              <a href=""><button style="background-color: #17a2b8">View</button></a>
+            </td>
+            <td class="leaveApplicationButtons">
+              <button title="Approve" style="background-color: #28a745">
+                Approve
+              </button>
+              <button title="Reject" style="background-color: red">
+                Reject
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td>LLC-02</td>
+            <td>John Doe</td>
+            <td>10/08/2025</td>
+            <td>15/08/2025</td>
+            <td>For Sickness</td>
+            <td class="leaveApplicationButtons">
+              <a href=""><button style="background-color: #17a2b8">View</button></a>
+            </td>
+            <td class="leaveApplicationButtons">
+              <button title="Approve" style="background-color: #28a745">
+                Approve
+              </button>
+              <button title="Reject" style="background-color: red">
+                Reject
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td>LLC-03</td>
+            <td>John Doe</td>
+            <td>10/08/2025</td>
+            <td>15/08/2025</td>
+            <td>For shifting</td>
+            <td class="leaveApplicationButtons">
+              <a href=""><button style="background-color: #17a2b8">View</button></a>
+            </td>
+            <td class="leaveApplicationButtons">
+              <button title="Approve" style="background-color: #28a745">
+                Approve
+              </button>
+              <button title="Reject" style="background-color: red">
+                Reject
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- All Pop up -->
+  <!-- Payment-US -->
+  <div id="paymentUS" style="display: none">
+    <form action="" method="post">
+      <a href="./" id="passkeyFormCloseBtn"><i class="fa fa-solid fa-xmark"></i></a>
+      <h3>Passkey Login</h3>
+      <div class="form-group">
+        <label for="passkey">Enter Passkey</label>
+        <input type="number" name="passkey" />
+      </div>
+      <div class="form-group">
+        <button type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+  <!--Employee Username and Password Popup -->
+  <div class="popup" id="popup">
+    <div class="popup-content">
+      <span class="close" id="closePopup">&times;</span>
+      <h3>Employee Created</h3>
+      <div class="info">
+        <span>Username: user123</span>
+        <i class="fa-solid fa-copy" onclick="copyToClipboard('user123')"></i>
+      </div>
+      <div class="info">
+        <span>Password: pass456</span>
+        <i class="fa-solid fa-copy" onclick="copyToClipboard('pass456')"></i>
+      </div>
+    </div>
+  </div>
+  <!-- Doc popup -->
+  <div class="doc-popup" id="docPopup">
+    <div class="doc-popup-content">
+      <span class="close" id="closeDocPopup"><i class="fa fa-xmark"></i></span>
+      <iframe
+        src=""
+        title="doc"
+        id="docFrame"
+        width="100%"
+        height="500px"></iframe>
+    </div>
+  </div>
+  <!-- View employee details popup -->
+  <div id="employeeDetailsPopup">
+    <div class="employeeDetailsContent" id="employeeDetailsContent">
+      <span id="emdc-close"><i class="fa-solid fa-xmark"></i></span>
+      <img src="./placeholder.jpg" alt="employee Image" />
+      <table>
+        <tr>
+          <td style="font-weight: bold">ID <span>:</span></td>
+          <td>LLC-01</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">Full Name <span>:</span></td>
+          <td>John Doe</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">Father's Name <span>:</span></td>
+          <td>John Doe</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">Phone Number <span>:</span></td>
+          <td>+8801318195591</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">DOB <span>:</span></td>
+          <td>03/04/2005</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">Address <span>:</span></td>
+          <td>Jashore, Bangladesh</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">Email <span>:</span></td>
+          <td>john@gmail.com</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">Company <span>:</span></td>
+          <td>Soft-Tech Technology LLC</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">Department <span>:</span></td>
+          <td>Sales</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">Position <span>:</span></td>
+          <td>Chief Operating Officer</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">Joining Date <span>:</span></td>
+          <td>12/12/2024</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">Blood Group <span>:</span></td>
+          <td>A+</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">NID <span>:</span></td>
+          <td>
+            <a href="./degree.pdf" target="_blank" class="empDocViewBtn">View Document</a>
+          </td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">SSN <span>:</span></td>
+          <td>
+            <a href="./degree.pdf" target="_blank" class="empDocViewBtn">View Document</a>
+          </td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">Certificate <span>:</span></td>
+          <td>
+            <a href="./degree.pdf" target="_blank" class="empDocViewBtn">View Document</a>
+          </td>
+        </tr>
+      </table>
+      <!-- Need to change the link extension .html to .php -->
+      <a
+        href="./employeeView.html?employeeId=LLC-01"
+        target="_blank"
+        class="btn"
+        style="color: white">View & Print</a>
+    </div>
+  </div>
+  <!-- Employee Delete popup -->
+  <div class="uniPopup" id="employeeDelete" style="display: none">
+    <form action="" class="employeeDeleteContainer">
+      <input
+        type="hidden"
+        name="deleteEmployeeId"
+        id="deleteEmpInput"
+        value="" />
+      <h3 style="color: red">
+        Delete Employee: <span id="idOfDeleteEmp">LLC-01</span>
+      </h3>
+      <h2>Are you sure..?</h2>
+      <div>
+        <button style="background-color: red">Delete</button>
+        <button id="closeDeleteEmployeePopup" type="button">Cancel</button>
+      </div>
+    </form>
+  </div>
+  <!-- Employee Update popup -->
+  <div class="uniPopup" id="empUpdatePopup" style="display: none">
+    <form id="" method="post">
+      <input type="hidden" name="updateId" id="updateEmpId" value="" />
+      <span id="empUPclose"><i class="fa fa-solid fa-xmark"></i></span>
+      <h2 style="text-align: center">Employee Update</h2>
+      <div class="formFlex">
+        <img id="emPhoto" src="./placeholder.jpg" alt="employee photo" />
+        <div class="form-group" style="justify-content: center">
+          <label for="employeePhoto">Employee Photo</label>
+          <input
+            type="file"
+            id="employeePhoto"
+            name="employeePhoto"
+            required />
+        </div>
+      </div>
+      <div class="formFlex">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" name="firstName" required />
+        </div>
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" name="lastName" required />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="fathersName">Father's Name</label>
+        <input type="text" id="fathersName" name="fathersName" required />
+      </div>
+      <div class="formFlex">
+        <div class="formFlex">
+          <div class="form-group" style="width: auto">
+            <label for="phoneCode">Phone code</label>
+            <select
+              name="phoneCode"
+              id="phoneCode"
+              style="width: 115px; height: 39px">
+              <option value="+1">USA (+1)</option>
+              <option value="+880">BD (+880)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input
+              type="tel"
+              id="phoneNumber"
+              name="phoneNumber"
+              required
+              value="+1" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="dob">Date of Birth</label>
+          <input type="date" id="dob" name="dob" style="height: 39px" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="address">Address</label>
+        <textarea id="address" name="address" rows="2"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+      <div class="form-group">
+        <label for="company">Select Company</label>
+        <select id="company" name="company" required>
+          <option value="" style="display: none">-- Select Company --</option>
+          <option value="soft-tech technology">Soft-Tech Technology</option>
+          <option value="soft-tech technology lls">
+            Soft-Tech Technology LLC
+          </option>
+        </select>
+      </div>
+      <div class="formFlex">
+        <div class="form-group">
+          <label for="department">Department</label>
+          <select id="department" name="department" required>
+            <option value="" style="display: none">
+              -- Select Department --
+            </option>
+            <option value="it">IT</option>
+            <option value="sales">Sales</option>
+            <option value="marketing">Marketing</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="position">Position</label>
+          <input type="text" id="position" name="position" required />
+        </div>
+      </div>
+      <div class="formFlex">
+        <div class="form-group">
+          <label for="joiningDate">Joining Date</label>
+          <input
+            type="date"
+            id="joiningDate"
+            name="joiningDate"
+            style="height: 39px" />
+        </div>
+        <div class="form-group">
+          <label for="bloodGroup">Blood Group</label>
+          <select id="bloodGroup" name="bloodGroup" required>
+            <option value="" style="display: none">
+              -- Select Blood Group --
+            </option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+        </div>
+      </div>
+      <fieldset>
+        <legend>Essential Documents</legend>
+        <div class="formFlex">
+          <div class="form-group">
+            <label for="ssnornid">SSN/NID </label>
+            <input type="text" id="ssnornid" name="ssnornid" />
+          </div>
+          <div class="form-group">
+            <label for="ssnornidPhoto">SSN/NID Photo </label>
+            <input type="file" id="ssnornidPhoto" name="ssnornidPhoto" />
+          </div>
+        </div>
+      </fieldset>
+      <fieldset id="additionalDocuments">
+        <legend>Additional Documents</legend>
+        <div class="formFlex">
+          <div class="form-group">
+            <label for="docType">Document Type </label>
+            <input type="text" id="docType" name="docType" />
+          </div>
+          <div class="form-group">
+            <label for="documentPhoto">Document Photo </label>
+            <input type="file" id="documentPhoto" name="documentPhoto" />
+          </div>
+          <div
+            id="addBtn"
+            style="display: flex; align-items: center; cursor: pointer">
+            <i class="fa-solid fa-plus" style="margin-top: 20px"></i>
+          </div>
+        </div>
+      </fieldset>
+
+      <button type="submit" class="submit-btn">Update</button>
+    </form>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    // view employee details popup
+    const viewEmBtn = document.querySelectorAll(".view-em-btn");
+    const employeeDetailsPopup = document.getElementById(
+      "employeeDetailsPopup"
+    );
+    const emdpCloseBtn = document.getElementById("emdc-close");
+    viewEmBtn.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        console.log("Click");
+        employeeDetailsPopup.style.display = "flex";
       });
-      //Add document field
-      const addBtn = document.getElementById("addBtn");
-      const fieldset = document.getElementById("additionalDocuments");
+    });
+    emdpCloseBtn.addEventListener("click", () => {
+      employeeDetailsPopup.style.display = "none";
+    });
+    employeeDetailsPopup.addEventListener("click", (e) => {
+      employeeDetailsPopup.style.display = "none";
+    });
+    document
+      .getElementById("employeeDetailsContent")
+      .addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+    // Img url
+    const emPhoto = document.getElementById("emPhoto");
+    const employeePhoto = document.getElementById("employeePhoto");
+    employeePhoto.addEventListener("change", (e) => {
+      const url = URL.createObjectURL(e.target.files[0]);
+      emPhoto.src = url;
+    });
 
-      addBtn.addEventListener("click", () => {
-        const newFormFlex = document.createElement("div");
-        newFormFlex.classList.add("formFlex");
+    // Phone code
+    const phoneCode = document.getElementById("phoneCode");
+    const phoneNumber = document.getElementById("phoneNumber");
+    phoneCode.addEventListener("change", (e) => {
+      console.log(e.target.value);
+      phoneNumber.value = e.target.value;
+    });
+    //Add document field
+    const addBtn = document.getElementById("addBtn");
+    const fieldset = document.getElementById("additionalDocuments");
 
-        newFormFlex.innerHTML = `
+    addBtn.addEventListener("click", () => {
+      const newFormFlex = document.createElement("div");
+      newFormFlex.classList.add("formFlex");
+
+      newFormFlex.innerHTML = `
           <div class="form-group" style='margin-top:15px'>
             <label>Document Type </label>
             <input type="text" name="docType[]" />
@@ -1037,80 +1003,81 @@
           </div>
     `;
 
-        // Insert right after addBtn's parent (.formFlex)
-        addBtn.parentNode.insertAdjacentElement("afterend", newFormFlex);
+      // Insert right after addBtn's parent (.formFlex)
+      addBtn.parentNode.insertAdjacentElement("afterend", newFormFlex);
 
-        // Add delete functionality
-        newFormFlex
-          .querySelector(".removeBtn")
-          .addEventListener("click", () => {
-            newFormFlex.remove();
-          });
-      });
-      // Navigation
-      document.querySelectorAll(".nav-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          document
-            .querySelectorAll(".nav-btn")
-            .forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-
-          document
-            .querySelectorAll(".content-section")
-            .forEach((sec) => sec.classList.remove("active"));
-          document.getElementById(btn.dataset.target).classList.add("active");
-        });
-      });
-
-      // Popup handling
-      const popup = document.getElementById("popup");
-      const closePopup = document.getElementById("closePopup");
-      const signupForm = document.getElementById("signupForm");
-
-      signupForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        popup.classList.add("active");
-      });
-
-      closePopup.addEventListener("click", () => {
-        popup.classList.remove("active");
-      });
-
-      // Copy to clipboard
-      function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => {
-          alert(text + " copied!");
-        });
-      }
-    </script>
-    <!-- Employee delete popup -->
-    <script>
-      const handleDelete = (id) => {
-        document.getElementById("idOfDeleteEmp").innerText = id;
-        document.getElementById("deleteEmpInput").value = id;
-        document.getElementById("employeeDelete").style.display = "flex";
-      };
-      document
-        .getElementById("closeDeleteEmployeePopup")
+      // Add delete functionality
+      newFormFlex
+        .querySelector(".removeBtn")
         .addEventListener("click", () => {
-          document.getElementById("employeeDelete").style.display = "none";
+          newFormFlex.remove();
         });
-    </script>
-    <!-- Employee Update popup -->
-    <script>
-      const handleUpdatePopup = (id) => {
-        document.getElementById("updateEmpId").value = id;
-        document.getElementById("empUpdatePopup").style.display = "flex";
-      };
-      document.getElementById("empUPclose").addEventListener("click", () => {
-        document.getElementById("empUpdatePopup").style.display = "none";
+    });
+    // Navigation
+    document.querySelectorAll(".nav-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document
+          .querySelectorAll(".nav-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        document
+          .querySelectorAll(".content-section")
+          .forEach((sec) => sec.classList.remove("active"));
+        document.getElementById(btn.dataset.target).classList.add("active");
       });
-    </script>
-    <!-- Passkey form -->
-    <script>
-      document.getElementById("paymentUSBtn").addEventListener("click", () => {
-        document.getElementById("paymentUS").style.display = "flex";
+    });
+
+    // Popup handling
+    const popup = document.getElementById("popup");
+    const closePopup = document.getElementById("closePopup");
+    const signupForm = document.getElementById("signupForm");
+
+    signupForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      popup.classList.add("active");
+    });
+
+    closePopup.addEventListener("click", () => {
+      popup.classList.remove("active");
+    });
+
+    // Copy to clipboard
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert(text + " copied!");
       });
-    </script>
-  </body>
+    }
+  </script>
+  <!-- Employee delete popup -->
+  <script>
+    const handleDelete = (id) => {
+      document.getElementById("idOfDeleteEmp").innerText = id;
+      document.getElementById("deleteEmpInput").value = id;
+      document.getElementById("employeeDelete").style.display = "flex";
+    };
+    document
+      .getElementById("closeDeleteEmployeePopup")
+      .addEventListener("click", () => {
+        document.getElementById("employeeDelete").style.display = "none";
+      });
+  </script>
+  <!-- Employee Update popup -->
+  <script>
+    const handleUpdatePopup = (id) => {
+      document.getElementById("updateEmpId").value = id;
+      document.getElementById("empUpdatePopup").style.display = "flex";
+    };
+    document.getElementById("empUPclose").addEventListener("click", () => {
+      document.getElementById("empUpdatePopup").style.display = "none";
+    });
+  </script>
+  <!-- Passkey form -->
+  <script>
+    document.getElementById("paymentUSBtn").addEventListener("click", () => {
+      document.getElementById("paymentUS").style.display = "flex";
+    });
+  </script>
+</body>
+
 </html>
