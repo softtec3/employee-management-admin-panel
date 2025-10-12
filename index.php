@@ -37,6 +37,10 @@
       <button class="nav-btn" data-target="leaveApplications">
         <i class="fa-solid fa-plane-departure"></i> Leave Applications
       </button>
+      <button id="paymentUSBtn" class="nav-btn" data-target="paymentUS">
+        <i class="fa-solid fa-file-invoice-dollar"></i> Payment-US
+      </button>
+      <a href=""> <i class="fa-solid fa-right-from-bracket"></i> Logout </a>
     </div>
 
     <!-- Main Content -->
@@ -657,6 +661,22 @@
     </div>
 
     <!-- All Pop up -->
+    <!-- Payment-US -->
+    <div id="paymentUS" style="display: none">
+      <form action="" method="post">
+        <a href="./" id="passkeyFormCloseBtn"
+          ><i class="fa fa-solid fa-xmark"></i
+        ></a>
+        <h3>Passkey Login</h3>
+        <div class="form-group">
+          <label for="passkey">Enter Passkey</label>
+          <input type="number" name="passkey" />
+        </div>
+        <div class="form-group">
+          <button type="submit">Submit</button>
+        </div>
+      </form>
+    </div>
     <!--Employee Username and Password Popup -->
     <div class="popup" id="popup">
       <div class="popup-content">
@@ -1084,6 +1104,12 @@
       };
       document.getElementById("empUPclose").addEventListener("click", () => {
         document.getElementById("empUpdatePopup").style.display = "none";
+      });
+    </script>
+    <!-- Passkey form -->
+    <script>
+      document.getElementById("paymentUSBtn").addEventListener("click", () => {
+        document.getElementById("paymentUS").style.display = "flex";
       });
     </script>
   </body>

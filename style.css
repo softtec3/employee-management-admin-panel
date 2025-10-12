@@ -55,7 +55,27 @@ a {
 .sidebar button.active {
   background: rgba(255, 255, 255, 0.2);
 }
+.sidebar a {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  padding: 12px;
+  margin: 8px 0;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 6px;
+  transition: background 0.3s;
+}
 
+.sidebar a:hover,
+.sidebar a.active {
+  background: rgba(255, 255, 255, 0.2);
+}
 /* Main content */
 .main-content {
   flex: 1;
@@ -810,6 +830,82 @@ select {
   border-radius: 3px;
   cursor: pointer;
   font-weight: 500;
+}
+/* Admin login form */
+#adminLoginFormContainer {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#adminLoginForm {
+  background-color: white;
+  padding: 20px;
+  min-width: 350px;
+  max-width: 90%;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.301);
+}
+#adminLoginForm h2 {
+  text-align: center;
+}
+#adminLoginForm button {
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background-color: var(--primaryColor);
+  font-weight: bold;
+  color: white;
+}
+/* Payment-US */
+#paymentUS {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+#paymentUS form {
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+#paymentUS form #passkeyFormCloseBtn {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid gainsboro;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#paymentUS form h3 {
+  text-align: center;
+}
+
+#paymentUS form button {
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background-color: var(--primaryColor);
+  font-weight: bold;
+  color: white;
 }
 /* custom scrollbar */
 /* width */
