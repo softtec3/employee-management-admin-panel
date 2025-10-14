@@ -250,7 +250,10 @@ include_once("./php/logout.php");
             name="taskDescription"
             rows="3"></textarea>
         </div>
-
+        <div class="form-group">
+          <label for="taskDocument">Task Document</label>
+          <input type="file" id="taskDocument" name="taskDocument" />
+        </div>
         <div class="form-group">
           <label for="deadline">Deadline</label>
           <input type="date" id="deadline" name="deadline" required />
@@ -673,7 +676,6 @@ include_once("./php/logout.php");
       </div>
     </form>
   </div>
-      
       ";
   }
 
