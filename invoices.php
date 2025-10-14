@@ -4,8 +4,9 @@ if (!isset($_SESSION["valid_role"]) || $_SESSION["valid_role"] != "super-admin")
   header("Location: ./index.php");
 }
 require_once("./php/db_connect.php");
-require_once("./php/all_status_invoices.php");
-require_once("./php/invoice_panel_logout.php");
+include_once("./php/all_status_invoices.php");
+include_once("./php/invoice_panel_logout.php");
+include_once("./php/all_emails.php");
 ?>
 
 
@@ -43,19 +44,22 @@ require_once("./php/invoice_panel_logout.php");
       <p style="text-transform: capitalize; margin-bottom:10px; font-weight: bold"><?php echo $_SESSION["valid_role"] ?></p>
       <ul id="navLinks">
         <li class="navLink" data-id="request">
-          <i class="fa-solid fa-paper-plane"></i> Request
+          <i class="fa-solid fa-paper-plane"></i> Request invoices
         </li>
         <li class="navLink" data-id="unpaid">
-          <i class="fa-solid fa-wallet"></i> Unpaid
+          <i class="fa-solid fa-wallet"></i> Unpaid invoices
         </li>
         <li class="navLink" data-id="pending">
-          <i class="fa-solid fa-hourglass-half"></i> Pending
+          <i class="fa-solid fa-hourglass-half"></i> Pending invoices
         </li>
         <li class="navLink" data-id="paid">
-          <i class="fa-solid fa-circle-check"></i> Paid
+          <i class="fa-solid fa-circle-check"></i> Paid invoices
         </li>
         <li class="navLink" data-id="rejected">
-          <i class="fa-solid fa-circle-xmark"></i> Rejected
+          <i class="fa-solid fa-circle-xmark"></i> Rejected invoices
+        </li>
+        <li class="navLink" data-id="emails">
+          <i class="fa-solid fa-envelope"></i> All emails
         </li>
         <li onclick="handleLogout()"><a href="./invoices.php?invoice_logout" style="color: black; text-decoration: none;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
       </ul>
@@ -236,9 +240,53 @@ require_once("./php/invoice_panel_logout.php");
           </table>
         </div>
       </section>
+
+      <!-- Emails section -->
+      <div id="emails" class="section" style="display: none;">
+        <div class="sectionHeader">Emails</div>
+        <div class="loaderTable">
+          <table>
+            <thead>
+              <th>ID</th>
+              <th>Product</th>
+              <th>Recipient</th>
+              <th>Subject</th>
+              <th>Body</th>
+              <th>Time</th>
+            </thead>
+            <tbody>
+              <?php
+              if ($all_emails && count($all_emails) > 0) {
+                foreach ($all_emails as $email) {
+                  $email_body = json_encode($email["body"]);
+                  echo "
+                <tr>
+                <td>{$email["id"]}</td>
+                <td>{$email["product"]}</td>
+                <td>{$email["recipent"]}</td>
+                <td title='{$email["subject"]}'>{$email["subject"]}</td>
+                <td><button id='emailBodyViewBtn' onclick='handleEmailBody($email_body)'>View</button></td>
+                <td>{$email["created_at"]}</td>
+              </tr>";
+                }
+              } else {
+                echo "<p>No emails found</p>";
+              }
+              ?>
+
+
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
-
+  <!-- Email body view popup -->
+  <div id="emailBodyViewContainer" style="display: none;">
+    <span id="emailBodyContainerClose"><i class="fa fa-solid fa-xmark"></i></span>
+    <div class="emailBodyViewContent">
+    </div>
+  </div>
   <!-- script for sidebar open and close -->
   <script>
     // Open sidebar
@@ -265,31 +313,21 @@ require_once("./php/invoice_panel_logout.php");
       });
     });
   </script>
-  <!-- Select product and show price -->
-  <script>
-    const desiredProduct = document.getElementById("desiredProduct");
-    const invoiceAmount = document.getElementById("invoiceAmount");
-    desiredProduct.addEventListener("change", (e) => {
-      const value = e.target.value;
-      if (value === "custom") {
-        invoiceAmount.removeAttribute("readonly");
-        invoiceAmount.required = true;
-      }
-      if (value === "product_1") {
-        invoiceAmount.value = "150";
-      } else if (value === "product_2") {
-        invoiceAmount.value = "320";
-      } else if (value === "product_3") {
-        invoiceAmount.value = "1018";
-      } else if (value === "product_4") {
-        invoiceAmount.value = "750";
-      }
-    });
-  </script>
   <!-- handle logout -->
   <script>
     const handleLogout = () => {
       window.location.href = "./invoices.php?invoice_logout";
+    }
+  </script>
+  <!-- Email body view container -->
+  <script>
+    document.getElementById("emailBodyContainerClose").addEventListener("click", () => {
+      document.getElementById("emailBodyViewContainer").style.display = "none";
+    })
+
+    const handleEmailBody = (body) => {
+      document.querySelector(".emailBodyViewContent").innerHTML = body;
+      document.getElementById("emailBodyViewContainer").style.display = "flex";
     }
   </script>
 </body>
