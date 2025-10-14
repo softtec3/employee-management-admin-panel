@@ -1,6 +1,6 @@
 <?php
 
-$stmt = $conn->prepare("SELECT * FROM emails");
+$stmt = $conn->prepare("SELECT * FROM emails ORDER BY id DESC");
 if (!$stmt) {
     die("Preparing error: " . $conn->error);
 }

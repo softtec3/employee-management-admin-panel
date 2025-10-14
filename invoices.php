@@ -256,7 +256,7 @@ include_once("./php/all_emails.php");
             </thead>
             <tbody>
               <?php
-              if ($all_emails && count($all_emails) > 0) {
+              if (isset($all_emails) && $all_emails && count($all_emails) > 0) {
                 foreach ($all_emails as $email) {
                   $email_body = json_encode($email["body"]);
                   echo "
@@ -270,7 +270,7 @@ include_once("./php/all_emails.php");
               </tr>";
                 }
               } else {
-                echo "<p>No emails found</p>";
+                echo "<tr><td colspan='12'>No emails found</td></tr>";
               }
               ?>
 
