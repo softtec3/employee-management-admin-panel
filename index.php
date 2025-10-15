@@ -6,6 +6,8 @@ if (!$_SESSION["user_id"] || !$_SESSION["user_role"]) {
 include_once("./php/db_connect.php");
 include_once("./php/logout.php");
 include_once("./php/leave_applications.php");
+include_once("./php/all_emp_ids.php");
+include_once("./php/tasks.php")
 ?>
 
 <!DOCTYPE html>
@@ -225,17 +227,22 @@ include_once("./php/leave_applications.php");
     <!-- Assign Task -->
     <div id="assignTask" class="content-section">
       <h2>Assign Task</h2>
-      <form id="taskForm">
+      <form id="taskForm" method="post" enctype="multipart/form-data">
         <div class="form-group">
           <label for="employeeId">Employee Id</label>
           <select id="employeeId" name="employeeId" required>
             <option value="" style="display: none">
               -- Select employee Id --
             </option>
-            <option value="llc-01">LLC-01</option>
-            <option value="llc-02">LLC-02</option>
-            <option value="llc-03">LLC-03</option>
-            <option value="llc-04">LLC-04</option>
+            <?php
+            if (isset($all_emp_ids) && count($all_emp_ids) > 0) {
+              foreach ($all_emp_ids as $emp_id) {
+                echo "
+                  <option value='$emp_id'>$emp_id</option>
+                  ";
+              }
+            }
+            ?>
           </select>
         </div>
 
@@ -430,8 +437,9 @@ include_once("./php/leave_applications.php");
         <thead>
           <tr>
             <th>Employee ID</th>
-            <th>Employee Name</th>
             <th>Task</th>
+            <th>Description</th>
+            <th>Document</th>
             <th>Assigned Date</th>
             <th>Deadline</th>
             <th>Status</th>
@@ -439,24 +447,32 @@ include_once("./php/leave_applications.php");
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>LLC-01</td>
-            <td>John Doe</td>
-            <td>Prepare Monthly Report</td>
-            <td>2025-09-20</td>
-            <td>2025-09-25</td>
-            <td>In Progress</td>
-            <td>---</td>
+          <?php
+          if (isset($all_tasks) && count($all_tasks) > 0) {
+            foreach ($all_tasks as $s_task) {
+              $doc_link = "./uploads/" . $s_task["task_document"];
+              $short_desc = substr($s_task["task_description"], 0, 50);
+              if ($s_task["status"] == "completed") {
+                $is_completed = "<td>{$s_task["completed_date"]}</td>";
+              } else {
+                $is_completed = "<td>---</td>";
+              }
+              echo "
+            <tr>
+            <td>{$s_task["employee_id"]}</td>
+            <td>{$s_task["task_title"]}</td>
+            <td title='{$s_task["task_description"]}'>$short_desc </td>
+            <td><a href='$doc_link' target='_blank' class='docViewLink'>View</a></td>
+            <td>{$s_task["created_at"]}</td>
+            <td>{$s_task["dead_line"]}</td>
+            <td>{$s_task["status"]}</td>
+            $is_completed
           </tr>
-          <tr>
-            <td>LLC-02</td>
-            <td>Jane Smith</td>
-            <td>Update Client Database</td>
-            <td>2025-09-22</td>
-            <td>2025-09-28</td>
-            <td>Completed</td>
-            <td>2025-10-19</td>
-          </tr>
+              ";
+            }
+          }
+          ?>
+
         </tbody>
       </table>
     </div>

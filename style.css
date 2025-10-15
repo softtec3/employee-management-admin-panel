@@ -924,6 +924,11 @@ select {
   margin-bottom: 10px;
   align-items: center;
 }
+.docViewLink {
+  color: var(--primaryColor);
+  font-weight: bold;
+  font-size: 16px;
+}
 /* custom scrollbar */
 /* width */
 ::-webkit-scrollbar {

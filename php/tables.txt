@@ -1,0 +1,23 @@
+//admin log
+$sql = "CREATE TABLE IF NOT EXISTS admin_panel_log(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(50) DEFAULT NULL,
+    password VARCHAR(100) DEFAULT NULL,
+    role VARCHAR(50) DEFAULT NULL,
+    passkey INT DEFAULT NULL
+)";
+
+
+/tasks
+CREATE TABLE IF NOT EXISTS tasks(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id VARCHAR(50) NOT NULL,
+    task_title VARCHAR(255) NOT NULL,
+    task_description TEXT NOT NULL,
+    task_document TEXT NOT NULL,
+    dead_line VARCHAR(100) NOT NULL,
+    status ENUM('pending', 'accepted', 'in-progress', 'completed') DEFAULT "pending",
+    completed_date VARCHAR(100) DEFAULT NULL,
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(employee_id) REFERENCES employee_log(employee_id) ON DELETE CASCADE ON UPDATE CASCADE
+)
