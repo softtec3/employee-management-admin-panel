@@ -426,10 +426,10 @@ include_once("./php/tasks.php")
       <h2>Employee Task Activity</h2>
       <select name="filter" id="filter" class="filter">
         <option value="" style="display: none">Filter by</option>
-        <option value="inProgress">In progress</option>
+        <option value="assigned">Assigned</option>
         <option value="pending">Pending</option>
-        <option value="accepted">Accepted</option>
-        <option value="Completed">Completed</option>
+        <option value="in-progress">In Progress</option>
+        <option value="completed">Completed</option>
       </select>
     </div>
     <div class="table-container">
@@ -465,11 +465,13 @@ include_once("./php/tasks.php")
             <td><a href='$doc_link' target='_blank' class='docViewLink'>View</a></td>
             <td>{$s_task["created_at"]}</td>
             <td>{$s_task["dead_line"]}</td>
-            <td>{$s_task["status"]}</td>
+            <td style='text-transform:capitalize'>{$s_task["status"]}</td>
             $is_completed
           </tr>
               ";
             }
+          } else {
+            echo "<tr><td colspan='12'>No data found</td></tr>";
           }
           ?>
 
@@ -1099,6 +1101,20 @@ include_once("./php/tasks.php")
     document.getElementById("paymentUSBtn").addEventListener("click", () => {
       document.getElementById("paymentUS").style.display = "flex";
     });
+  </script>
+  <!-- Activity filter -->
+  <script>
+    document.getElementById("filter").addEventListener("change", (e) => {
+      const value = e.target.value;
+      window.location.href = `./index.php?filter_activity=${value}`;
+    })
+    const searchParam = new URLSearchParams(window.location.search);
+    if (searchParam.has("filter_activity")) {
+      document.querySelectorAll(".content-section").forEach(single => {
+        single.classList.replace("active", "hidden");
+      })
+      document.getElementById("activity").classList.replace("hidden", "active");
+    }
   </script>
 </body>
 

@@ -72,3 +72,14 @@ if ($result && $result->num_rows > 0) {
     }
 }
 $stmt->close();
+
+if (isset($_GET["filter_activity"]) && $_GET["filter_activity"] != "") {
+    $target_status  = $_GET["filter_activity"];
+    $filtered_arr = array_filter($all_tasks, function ($task) use ($target_status) {
+        if ($task["status"] != $target_status) {
+            return false;
+        }
+        return true;
+    });
+    $all_tasks = array_values($filtered_arr);
+}
