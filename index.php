@@ -5,6 +5,7 @@ if (!$_SESSION["user_id"] || !$_SESSION["user_role"]) {
 }
 include_once("./php/db_connect.php");
 include_once("./php/logout.php");
+include_once("./php/leave_applications.php");
 ?>
 
 <!DOCTYPE html>
@@ -594,64 +595,48 @@ include_once("./php/logout.php");
             <th>To</th>
             <th>Reason</th>
             <th>Application</th>
+            <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>LLC-01</td>
-            <td>John Doe</td>
-            <td>10/08/2025</td>
-            <td>15/08/2025</td>
-            <td>For final examination</td>
-            <td class="leaveApplicationButtons">
-              <a href=""><button style="background-color: #17a2b8">View</button></a>
-            </td>
-            <td class="leaveApplicationButtons">
-              <button title="Approve" style="background-color: #28a745">
-                Approve
-              </button>
-              <button title="Reject" style="background-color: red">
-                Reject
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>LLC-02</td>
-            <td>John Doe</td>
-            <td>10/08/2025</td>
-            <td>15/08/2025</td>
-            <td>For Sickness</td>
-            <td class="leaveApplicationButtons">
-              <a href=""><button style="background-color: #17a2b8">View</button></a>
-            </td>
-            <td class="leaveApplicationButtons">
-              <button title="Approve" style="background-color: #28a745">
-                Approve
-              </button>
-              <button title="Reject" style="background-color: red">
-                Reject
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>LLC-03</td>
-            <td>John Doe</td>
-            <td>10/08/2025</td>
-            <td>15/08/2025</td>
-            <td>For shifting</td>
-            <td class="leaveApplicationButtons">
-              <a href=""><button style="background-color: #17a2b8">View</button></a>
-            </td>
-            <td class="leaveApplicationButtons">
-              <button title="Approve" style="background-color: #28a745">
-                Approve
-              </button>
-              <button title="Reject" style="background-color: red">
-                Reject
-              </button>
-            </td>
-          </tr>
+          <?php
+          if (isset($all_applications) && count($all_applications) > 0) {
+            foreach ($all_applications as $s_application) {
+              $pdf_url = "./uploads/applications/" . $s_application["application"];
+              $action = "<td class='leaveApplicationButtons'>
+                              <a href='./index.php?approve_application={$s_application["id"]}' title='Approve' style='background-color: #28a745'>
+                                Approve
+                              </a>
+                              <a href='./index.php?reject_application={$s_application["id"]}' title='Reject' style='background-color: red'>
+                                Reject
+                              </a>
+                            </td>";
+              if ($s_application["status"] != "pending") {
+                $action = "<td class='leaveApplicationButtons'>
+                              Taken
+                            </td>";;
+              }
+              echo "
+                            <tr>
+                            <td>{$s_application["employee_id"]}</td>
+                            <td>{$s_application["full_name"]}</td>
+                            <td>{$s_application["from_date"]}</td>
+                            <td>{$s_application["to_date"]}</td>
+                            <td>{$s_application["reason"]}</td>
+                            <td class='leaveApplicationButtons'>
+                             <a href='$pdf_url' class='applicationViewBtn' style='background-color: #17a2b8'>View</a>
+                           </td>
+                           <td style='text-transform: Capitalize'>{$s_application["status"]}</td>
+                              $action
+                            </tr>
+                                
+                                ";
+            }
+          } else {
+            echo "<tr><td colspan='12'>0 application</td></tr>";
+          }
+          ?>
         </tbody>
       </table>
     </div>
