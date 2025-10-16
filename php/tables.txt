@@ -21,3 +21,24 @@ CREATE TABLE IF NOT EXISTS tasks(
     created_at timestamp DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(employee_id) REFERENCES employee_log(employee_id) ON DELETE CASCADE ON UPDATE CASCADE
 )
+
+//alter employee_personal_details TABLE
+ALTER TABLE employee_personal_details
+	add COLUMN dob varchar(100) NOT NULL,
+    add COLUMN address varchar(255) NOT NULL,
+    add COLUMN country ENUM('USA', 'Bangladesh') NOT NULL,
+    add COLUMN company varchar(100)  NOT NULL,
+    add COLUMN department varchar(255) NOT NULL,
+    add COLUMN position varchar(255) NOT NULL,
+    add column joining_date varchar(255) NOT NULL,
+    add COLUMN blood_group varchar(10) NOT NULL
+
+
+//extra_document TABLE
+CREATE TABLE extra_documents(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id varchar(100) NOT NULL,
+    doc_type varchar(255) NOT NULL,
+    doc_photo varchar(255)  NOT NULL,
+    FOREIGN KEY(employee_id) REFERENCES employee_log(employee_id) ON DELETE CASCADE ON UPDATE CASCADE
+)

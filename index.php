@@ -7,7 +7,8 @@ include_once("./php/db_connect.php");
 include_once("./php/logout.php");
 include_once("./php/leave_applications.php");
 include_once("./php/all_emp_ids.php");
-include_once("./php/tasks.php")
+include_once("./php/tasks.php");
+include_once("./php/employee_signup.php");
 ?>
 
 <!DOCTYPE html>
@@ -31,9 +32,17 @@ include_once("./php/tasks.php")
       <p><?php echo $_SESSION["user_id"] ?></p>
       <p style="text-transform: uppercase;"><?php echo $_SESSION["user_role"] ?></p>
     </div>
-    <button class="nav-btn active" data-target="employeeSignUp">
-      <i class="fa-solid fa-user-plus"></i> Employee Signup
+    <?php
+    if ($_SESSION["user_role"] && ($_SESSION["user_role"] == "super-admin" || $_SESSION["user_role"] == "manager")) {
+      echo "
+        <button class='nav-btn active' data-target='employeeSignUp'>
+      <i class='fa-solid fa-user-plus'></i> Employee Signup
     </button>
+        ";
+    }
+    ?>
+
+
     <button class="nav-btn" data-target="assignTask">
       <i class="fa-solid fa-tasks"></i> Assign Task
     </button>
@@ -41,12 +50,12 @@ include_once("./php/tasks.php")
       <i class="fas fa-history"></i>
       Activity
     </button>
-    <button class="nav-btn" data-target="approvals">
+    <!-- <button class="nav-btn" data-target="approvals">
       <i class="fas fa-check-circle"></i> Approvals
-    </button>
-    <button class="nav-btn" data-target="reports">
+    </button> -->
+    <!-- <button class="nav-btn" data-target="reports">
       <i class="fas fa-chart-line"></i> Reports
-    </button>
+    </button> -->
 
     <button class="nav-btn" data-target="employeeList">
       <i class="fa-solid fa-users"></i> Employees
@@ -70,9 +79,15 @@ include_once("./php/tasks.php")
   <!-- Main Content -->
   <div class="main-content">
     <!-- Employee Signup -->
-    <div id="employeeSignUp" class="content-section active">
+    <div id="employeeSignUp" class="content-section     <?php
+                                                        if ($_SESSION["user_role"] && ($_SESSION["user_role"] == "super-admin" || $_SESSION["user_role"] == "manager")) {
+                                                          echo "active";
+                                                        } else {
+                                                          echo "hidden";
+                                                        }
+                                                        ?> ">
       <h2>Employee Signup</h2>
-      <form id="signupForm">
+      <form id="signupForm" method="post" enctype="multipart/form-data">
         <div class="formFlex">
           <img id="emPhoto" src="./placeholder.jpg" alt="employee photo" />
           <div class="form-group" style="justify-content: center">
@@ -206,11 +221,11 @@ include_once("./php/tasks.php")
           <div class="formFlex">
             <div class="form-group">
               <label for="docType">Document Type </label>
-              <input type="text" id="docType" name="docType" />
+              <input type="text" id="docType" name="docType[]" />
             </div>
             <div class="form-group">
               <label for="documentPhoto">Document Photo </label>
-              <input type="file" id="documentPhoto" name="documentPhoto" />
+              <input type="file" id="documentPhoto" name="documentPhoto[]" />
             </div>
             <div
               id="addBtn"
@@ -225,7 +240,13 @@ include_once("./php/tasks.php")
     </div>
 
     <!-- Assign Task -->
-    <div id="assignTask" class="content-section">
+    <div id="assignTask" class="content-section <?php
+                                                if ($_SESSION["user_role"] == "super-admin" || $_SESSION["user_role"] == "manager") {
+                                                  echo "";
+                                                } else {
+                                                  echo "active";
+                                                }
+                                                ?>">
       <h2>Assign Task</h2>
       <form id="taskForm" method="post" enctype="multipart/form-data">
         <div class="form-group">
@@ -685,20 +706,29 @@ include_once("./php/tasks.php")
   ?>
 
   <!--Employee Username and Password Popup -->
-  <div class="popup" id="popup">
-    <div class="popup-content">
-      <span class="close" id="closePopup">&times;</span>
+  <?php
+  if (isset($pop_up_is_pass) && count($pop_up_is_pass) > 0) {
+    $pass = $pop_up_is_pass["password"];
+    $emp_user_id = $pop_up_is_pass["employee_id"];
+    echo "
+    <div class='popup' id='popup' style='display:flex'>
+    <div class='popup-content'>
+      <a href='./index.php' class='close' id='closePopup'>&times;</a>
       <h3>Employee Created</h3>
-      <div class="info">
-        <span>Username: user123</span>
-        <i class="fa-solid fa-copy" onclick="copyToClipboard('user123')"></i>
+      <div class='info'>
+        <span>Employee ID: {$pop_up_is_pass["employee_id"]}</span>
+        <i class='fa-solid fa-copy' onclick='copyToClipboard(\"$emp_user_id\")'></i>
       </div>
-      <div class="info">
-        <span>Password: pass456</span>
-        <i class="fa-solid fa-copy" onclick="copyToClipboard('pass456')"></i>
+      <div class='info'>
+        <span>Password: {$pop_up_is_pass["password"]}</span>
+        <i class='fa-solid fa-copy' onclick='copyToClipboard(\"$pass\")'></i>
       </div>
     </div>
   </div>
+      ";
+  }
+  ?>
+
   <!-- Doc popup -->
   <div class="doc-popup" id="docPopup">
     <div class="doc-popup-content">
@@ -1057,17 +1087,19 @@ include_once("./php/tasks.php")
     const closePopup = document.getElementById("closePopup");
     const signupForm = document.getElementById("signupForm");
 
-    signupForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      popup.classList.add("active");
-    });
+    // signupForm.addEventListener("submit", (e) => {
+    //  e.preventDefault();
+    //   popup.classList.add("active");
+    // });
 
-    closePopup.addEventListener("click", () => {
-      popup.classList.remove("active");
-    });
+    // closePopup.addEventListener("click", () => {
+    //   popup.classList.remove("active");
+    // });
 
     // Copy to clipboard
     function copyToClipboard(text) {
+      console.log("hello")
+      console.log(text);
       navigator.clipboard.writeText(text).then(() => {
         alert(text + " copied!");
       });
@@ -1115,6 +1147,8 @@ include_once("./php/tasks.php")
       })
       document.getElementById("activity").classList.replace("hidden", "active");
     }
+  </script>
+  <script>
   </script>
 </body>
 
