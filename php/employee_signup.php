@@ -1,6 +1,6 @@
 <?php
 $pop_up_is_pass = [];
-if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["firstName"]) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["firstName"])) {
     $firstName = $_POST["firstName"];
     $lastName = $_POST["lastName"];
     $fathersName = $_POST["fathersName"];
@@ -22,16 +22,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["firstName"]) {
         $country = "USA";
     }
     // get all users count and make dynamic employee_id and password
-    $sql = "SELECT COUNT(*) AS total_rows FROM employee_log";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $total_user = (int) $row["total_rows"];
+    $stmt = $conn->prepare("SELECT id FROM employee_log");
+    if (!$stmt) {
+        die("Preparing error: " . $conn->error);
     }
+    if (!$stmt->execute()) {
+        die("execution error: " . $stmt->error);
+    }
+    $result = $stmt->get_result();
+    if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $total[] = $row;
+        }
+    }
+    $s = array_column($total, "id");
+    $largest = max($s);
 
-    $employee_id = "user" . 100 + $total_user + 1;
-    $employee_password = "password" . 100 + $total_user + 1;
+    $employee_id = "user" . 100 + $largest + 1;
+    $employee_password = "password" . 100 + $largest + 1;
     $full_name = $firstName . " " . $lastName;
     // insert tinto employee_log
     $stmt = $conn->prepare("INSERT INTO employee_log(employee_id, password, name) VALUES (?,?,?)");
@@ -45,12 +53,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["firstName"]) {
     $stmt->close();
 
     // insert into employee_personal_details
-    $stmt = $conn->prepare("INSERT into employee_personal_details (employee_id, profile_image, first_name, last_name, fathers_name, number_type, contact_number, dob, address, country, company, department, position, joining_date, blood_group) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+    $stmt = $conn->prepare("INSERT into employee_personal_details (employee_id, profile_image, first_name, last_name, fathers_name, number_type, contact_number, dob, address, country, company, department, position, joining_date, blood_group,email) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
     if (!$stmt) {
         die("employee_personal_details preparing error: " . $conn->error);
     }
-    $stmt->bind_param("sssssssssssssss", $employee_id, $employeePhoto, $firstName, $lastName, $fathersName, $phoneCode, $phoneNumber, $dob, $address, $country, $company, $department, $position, $joiningDate, $bloodGroup);
+    $stmt->bind_param("ssssssssssssssss", $employee_id, $employeePhoto, $firstName, $lastName, $fathersName, $phoneCode, $phoneNumber, $dob, $address, $country, $company, $department, $position, $joiningDate, $bloodGroup, $email);
 
     if (!$stmt->execute()) {
         die("employee_personal_details execution error: " . $stmt->error);

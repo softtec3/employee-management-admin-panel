@@ -3,12 +3,21 @@ session_start();
 if (!$_SESSION["user_id"] || !$_SESSION["user_role"]) {
   header("Location: ./login.php");
 }
+$logged_in_user = $_SESSION["user_id"];
 include_once("./php/db_connect.php");
 include_once("./php/logout.php");
 include_once("./php/leave_applications.php");
 include_once("./php/all_emp_ids.php");
 include_once("./php/tasks.php");
 include_once("./php/employee_signup.php");
+include_once("./php/employees_operations.php");
+include_once("./php/projects.php");
+
+if ($_SESSION["user_role"] == "super-admin" || $_SESSION["user_role"] == "project-manager") {
+  $project_access = "true";
+} else {
+  $project_access = "false";
+}
 ?>
 
 <!DOCTYPE html>
@@ -70,6 +79,16 @@ include_once("./php/employee_signup.php");
       <i class='fa-solid fa-file-invoice-dollar'></i> Payment-US
     </button>
         ";
+    }
+    ?>
+    <?php
+    if ($_SESSION["user_role"] == "super-admin" || $_SESSION["user_role"] == "project-manager") {
+      echo "
+          <button class='nav-btn' data-target='projects'>
+      <i class='fa-solid fa-diagram-project'></i>
+      Projects
+    </button>
+      ";
     }
     ?>
 
@@ -296,7 +315,7 @@ include_once("./php/employee_signup.php");
   <div id="employeeList" class="content-section">
     <div class="flexJustify">
       <h2>Employees</h2>
-      <form action="" class="inputFrom">
+      <form action="" class="inputFrom" method="get">
         <input
           type="search"
           name="searchEmployeeId"
@@ -304,6 +323,7 @@ include_once("./php/employee_signup.php");
           placeholder="Search by ID"
           required />
         <button type="submit" class="searchBtn">Search</button>
+        <a href="./index.php" type="submit" class="searchBtn" style="background-color: red;">Reset</a>
       </form>
     </div>
     <div class="table-container">
@@ -318,125 +338,60 @@ include_once("./php/employee_signup.php");
             <th>Department</th>
             <th>Position</th>
             <th>Joining Date</th>
-            <th>Salary</th>
             <th>Operation</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>LLC-01</td>
+          <?php
+          if (isset($all_employees) && count($all_employees) > 0) {
+            foreach ($all_employees as $s_employee) {
+              $em_img_url = "./placeholder.jpg";
+              $em_emp_id =  $s_employee["employee_id"];
+              if ($s_employee["profile_image"]) $em_img_url = "./uploads/" . $s_employee["profile_image"];
+              echo "
+                <tr>
+            <td>{$s_employee["employee_id"]}</td>
             <td>
               <img
-                class="tablePhotoEmployee"
-                src="./placeholder.jpg"
-                alt="" />
+                class='tablePhotoEmployee'
+                src='$em_img_url'
+                alt='' />
             </td>
-            <td>John Doe</td>
-            <td>john@example.com</td>
-            <td>+880123456789</td>
-            <td>IT</td>
-            <td>Developer</td>
-            <td>2025-01-15</td>
-            <td>$1500</td>
+            <td>{$s_employee["first_name"]} {$s_employee["last_name"]}</td>
+            <td>{$s_employee["email"]}</td>
+            <td>{$s_employee["contact_number"]}</td>
+            <td>{$s_employee["department"]}</td>
+            <td>{$s_employee["position"]}</td>
+            <td>{$s_employee["joining_date"]}</td>
             <td>
+              <a
+                href='./index.php?view_id={$s_employee["id"]}'
+                class='opBtn view-em-btn'
+                style='background-color: #17a2b8'
+                title='View'>
+                <i class='fa-solid fa-eye'></i>
+              </a>
+              <a
+                href='./index.php?edit_id={$s_employee["id"]}&view_id={$s_employee["id"]}'
+                class='opBtn'
+                title='Edit'
+                style='background-color: #28a745'>
+                <i class='fa-solid fa-pen-to-square'></i>
+              </a>
               <button
-                class="opBtn view-em-btn"
-                style="background-color: #17a2b8"
-                title="View">
-                <i class="fa-solid fa-eye"></i>
-              </button>
-              <button
-                class="opBtn"
-                onclick="handleUpdatePopup('LLC-01')"
-                title="Edit"
-                style="background-color: #28a745">
-                <i class="fa-solid fa-pen-to-square"></i>
-              </button>
-              <button
-                onclick="handleDelete('LLC-01')"
-                class="opBtn"
-                title="Delete"
-                style="background-color: red">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>LLC-02</td>
-            <td>
-              <img
-                class="tablePhotoEmployee"
-                src="./placeholder.jpg"
-                alt="" />
-            </td>
-            <td>Jane Smith</td>
-            <td>jane@example.com</td>
-            <td>+880198765432</td>
-            <td>HR</td>
-            <td>Manager</td>
-            <td>2024-12-01</td>
-            <td>$1800</td>
-            <td>
-              <button
-                class="opBtn view-em-btn"
-                style="background-color: #17a2b8"
-                title="View">
-                <i class="fa-solid fa-eye"></i>
-              </button>
-              <button
-                class="opBtn"
-                onclick="handleUpdatePopup('LLC-02')"
-                title="Edit"
-                style="background-color: #28a745">
-                <i class="fa-solid fa-pen-to-square"></i>
-              </button>
-              <button
-                class="opBtn"
-                onclick="handleDelete('LLC-02')"
-                title="Delete"
-                style="background-color: red">
-                <i class="fa-solid fa-trash"></i>
+                onclick=\"handleDelete('$em_emp_id')\"
+                class='opBtn'
+                title='Delete'
+                style='background-color: red'>
+                <i class='fa-solid fa-trash'></i>
               </button>
             </td>
-          </tr>
-          <tr>
-            <td>LLC-03</td>
-            <td>
-              <img
-                class="tablePhotoEmployee"
-                src="./placeholder.jpg"
-                alt="" />
-            </td>
-            <td>Jane Smith</td>
-            <td>jane@example.com</td>
-            <td>+880198765432</td>
-            <td>HR</td>
-            <td>Manager</td>
-            <td>2024-12-01</td>
-            <td>$1800</td>
-            <td>
-              <button
-                class="opBtn view-em-btn"
-                style="background-color: #17a2b8"
-                title="View">
-                <i class="fa-solid fa-eye"></i>
-              </button>
-              <button
-                class="opBtn"
-                onclick="handleUpdatePopup('LLC-03')"
-                title="Edit"
-                style="background-color: #28a745">
-                <i class="fa-solid fa-pen-to-square"></i>
-              </button>
-              <button
-                class="opBtn"
-                onclick="handleDelete('LLC-03')"
-                title="Delete"
-                style="background-color: red">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </td>
-          </tr>
+          </tr> 
+                ";
+            }
+          }
+          ?>
+
         </tbody>
       </table>
     </div>
@@ -680,7 +635,237 @@ include_once("./php/employee_signup.php");
       </table>
     </div>
   </div>
+  <!-- Projects-->
+  <div id="projects" class="content-section hidden">
+    <div class="projectsNav">
+      <button onclick="handleProjectContent('createProject')">Create Project</button>
+      <button onclick="handleProjectContent('assignEmployee')">Assign Employee</button>
+      <button onclick="handleProjectContent('projectReport')">Report</button>
+    </div>
+    <!-- Create project -->
+    <div id="createProject" class="project-section">
+      <form action="" method="post" enctype="multipart/form-data">
+        <h2 style="margin-bottom: 0;">Create Project</h2>
+        <div class="form-group">
+          <label for="project_title">Project Title</label>
+          <input type="text" name="project_title" id="" required>
+        </div>
+        <div class="form-group">
+          <label for="project_description">Project Description</label>
+          <textarea name="project_description" style="resize: none; min-height:120px" id="" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="project_attachment">Project Attachment</label>
+          <input type="file" name="project_attachment" id="">
+        </div>
+        <div class="formFlex">
+          <div class="form-group">
+            <label for="project_start">Project Start</label>
+            <input type="date" name="project_start" id="" value="" required>
+          </div>
+          <div class="form-group">
+            <label for="project_deadline">Project Deadline</label>
+            <input type="date" name="project_deadline" id="" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <button class="submit-btn">Create Project</button>
+        </div>
 
+      </form>
+    </div>
+    <!-- Assign employee -->
+    <div id="assignEmployee" class="project-section" style="display: none;">
+      <form action="" method="post" enctype="multipart/form-data">
+        <h2 style="margin-bottom: 0;">Assign Employee</h2>
+        <div class="form-group">
+          <label for="project_id">Select Project</label>
+          <select name="project_id" id="project_id" required>
+            <option value="" style="display: none;">---Select a project---</option>
+            <?php
+            if (isset($all_projects) && count($all_projects) > 0) {
+              foreach ($all_projects as $project) {
+
+                echo "<option value='{$project["id"]}'>{$project["title"]}</option>";
+              }
+            }
+            ?>
+          </select>
+        </div>
+        <input type="hidden" name="project_title_task" id="project_title_task">
+        <div class="form-group">
+          <label for="assign_to">Assign To</label>
+          <select name="assign_to" id="" required>
+            <option value="" style="display: none;">---Select an employee---</option>
+            <?php
+            if (isset($all_emp_ids) && count($all_emp_ids) > 0) {
+              foreach ($all_emp_ids as $emp_id) {
+                echo "
+                  <option value='$emp_id'>$emp_id</option>
+                  ";
+              }
+            }
+            ?>
+          </select>
+          <input type="hidden" name="assign_by" value="<?php echo htmlspecialchars($logged_in_user) ?>">
+        </div>
+        <div class="form-group">
+          <label for="task_title">Task Title</label>
+          <input type="text" name="task_title" id="" required>
+        </div>
+        <div class="form-group">
+          <label for="task_description">Task Description</label>
+          <textarea name="task_description" style="resize: none; min-height:120px" id="" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="task_attachment">Task Attachment</label>
+          <input type="file" name="task_attachment" id="">
+        </div>
+        <div class="formFlex">
+          <div class="form-group">
+            <label for="assign_date">Assign Date</label>
+            <input type="date" name="assign_date" id="" value="" required>
+          </div>
+          <div class="form-group">
+            <label for="task_deadline">Task Deadline</label>
+            <input type="date" name="task_deadline" id="" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <button class="submit-btn">Assign Task</button>
+        </div>
+
+      </form>
+    </div>
+    <!-- Project report -->
+    <div id="projectReport" class="project-section" style="display: none;">
+      <div style="display: flex; align-items:center; justify-content: flex-end;width:100%; margin-bottom:20px">
+        <!-- <select name="select_project" id="selectProject" style="max-width: 200px;">
+          <option value="" style="display: none;">--Select a project--</option>
+          <?php
+          if (isset($all_projects) && count($all_projects) > 0) {
+            foreach ($all_projects as $project) {
+
+              echo "<option value='{$project["id"]}'>{$project["title"]}</option>";
+            }
+          }
+          ?>
+        </select> -->
+      </div>
+      <!-- All projects -->
+      <h2>All Projects</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Project ID</th>
+              <th>Title</th>
+              <th>Description</th>
+              <th>Attachment</th>
+              <th>Start Date</th>
+              <th>Deadline</th>
+              <th>Status</th>
+              <th>Action</th>
+              <th>Completed Date</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+            if (isset($all_projects) && count($all_projects) > 0) {
+
+              foreach ($all_projects as $s_project) {
+                if ($s_project["status"] != "completed") {
+                  $act_btn = "<td><a href='./index.php?complete_project={$s_project["id"]}' class='projectActionBtn' style='background-color: green;'>Complete</a></td>";
+                } else {
+                  $act_btn = "<td>---</td>";
+                }
+                if ($s_project["completed_date"]) {
+                  $completed_pro = "<td>{$s_project["completed_date"]}</td>";
+                } else {
+                  $completed_pro = "<td>---</td>";
+                }
+                echo "
+                    <tr>
+              <td>{$s_project["id"]}</td>
+              <td>{$s_project["title"]}</td>
+              <td>{$s_project["description"]}</td>
+              <td><a href='./uploads/{$s_project["attachment"]}' target='_blank' class='projectActionBtn' style='background-color: orange;'>View</a></td>
+              <td>{$s_project["start_date"]}</td>
+              <td>{$s_project["deadline"]}</td>
+              <td style='text-transform:capitalize'>{$s_project["status"]}</td>
+              $act_btn
+               $completed_pro
+               <td><a href='./index.php?delete_project={$s_project["id"]}' class='projectActionBtn' style='background-color: red;'>Delete</a></td>
+            </tr>
+                  ";
+              }
+            }
+            ?>
+          </tbody>
+        </table>
+      </div>
+      <!-- Overview -->
+      <h2 style="margin-top: 20px;">Tasks Overview</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Project ID</th>
+              <th>Project Title</th>
+              <th>Task Title</th>
+              <th>Assign To</th>
+              <th>Assign Date</th>
+              <th>Deadline</th>
+              <th>Status</th>
+              <th>Action</th>
+              <th>Correction</th>
+              <th>Completed Date</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+            if (isset($all_projects_tasks) && count($all_projects_tasks) > 0) {
+              foreach ($all_projects_tasks as $s_p_task) {
+                if ($s_p_task["completed_date"]) {
+                  $completed_task = "<td>{$s_p_task["completed_date"]}</td>";
+                } else {
+                  $completed_task = "<td>---</td>";
+                }
+                if ($s_p_task["correction"]) {
+                  $task_correction = "<td>{$s_p_task["correction"]}</td>";
+                } else {
+                  $task_correction = "<td>---</td>";
+                }
+                echo "
+                  <tr>
+              <td>{$s_p_task["project_id"]}</td>
+              <td>{$s_p_task["project_title"]}</td>
+              <td>{$s_p_task["title"]}</td>
+              <td>{$s_p_task["assign_to"]}</td>
+              <td>{$s_p_task["created_at"]}</td>
+              <td>{$s_p_task["deadline"]}</td>
+              <td style='text-transform: capitalize'>{$s_p_task["status"]}</td>
+              <td><button onclick='handleCorrection({$s_p_task["id"]})' class='projectActionBtn' style='background-color: orange;'>Correction</button>
+              </td>
+              $task_correction
+              $completed_task
+              <td>
+              <a href='./index.php?delete_task={$s_p_task["id"]}' class='projectActionBtn' style='background-color: red;'>Delete</a></td>
+
+            </tr>
+                ";
+              }
+            }
+            ?>
+
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
   <!-- All Pop up -->
   <!-- Payment-US -->
   <?php
@@ -742,86 +927,99 @@ include_once("./php/employee_signup.php");
     </div>
   </div>
   <!-- View employee details popup -->
-  <div id="employeeDetailsPopup">
-    <div class="employeeDetailsContent" id="employeeDetailsContent">
-      <span id="emdc-close"><i class="fa-solid fa-xmark"></i></span>
-      <img src="./placeholder.jpg" alt="employee Image" />
+  <?php
+  if (isset($target_employee) && count($target_employee) > 0) {
+    $t_e_img_url = "./placeholder.jpg";
+    $nid_link = $target_nid_doc["ssn_photo"] ? "./uploads/" . $target_nid_doc["ssn_photo"] : "";
+    if ($target_employee["profile_image"]) $t_e_img_url = "./uploads/" . $target_employee["profile_image"];
+    $doc_rows = "";
+    foreach ($all_other_documents as $s_doc) {
+      $doc_link = $s_doc["doc_photo"] ? "./uploads/" . $s_doc["doc_photo"] : "";
+      $doc_rows .= "
+        <tr>
+          <td style='font-weight: bold'>{$s_doc["doc_type"]} <span>:</span></td>
+          <td>
+            <a href='$doc_link' target='_blank' class='empDocViewBtn'>View Document</a>
+          </td>
+        </tr>
+      ";
+    };
+
+    echo "
+          <div id='employeeDetailsPopup'>
+    <div class='employeeDetailsContent' id='employeeDetailsContent'>
+      <a href='./index.php' id='emdc-close'><i class='fa-solid fa-xmark'></i></a>
+      <img src='$t_e_img_url' alt='employee Image' />
       <table>
         <tr>
-          <td style="font-weight: bold">ID <span>:</span></td>
-          <td>LLC-01</td>
+          <td style='font-weight: bold'>ID <span>:</span></td>
+          <td>{$target_employee["employee_id"]}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold">Full Name <span>:</span></td>
-          <td>John Doe</td>
+          <td style='font-weight: bold'>Full Name <span>:</span></td>
+          <td>{$target_employee["first_name"]} {$target_employee["last_name"]}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold">Father's Name <span>:</span></td>
-          <td>John Doe</td>
+          <td style='font-weight: bold'>Father's Name <span>:</span></td>
+          <td>{$target_employee["fathers_name"]}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold">Phone Number <span>:</span></td>
-          <td>+8801318195591</td>
+          <td style='font-weight: bold'>Phone Number <span>:</span></td>
+          <td>{$target_employee["contact_number"]}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold">DOB <span>:</span></td>
-          <td>03/04/2005</td>
+          <td style='font-weight: bold'>DOB <span>:</span></td>
+          <td>{$target_employee["dob"]}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold">Address <span>:</span></td>
-          <td>Jashore, Bangladesh</td>
+          <td style='font-weight: bold'>Address <span>:</span></td>
+          <td>{$target_employee["address"]}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold">Email <span>:</span></td>
-          <td>john@gmail.com</td>
+          <td style='font-weight: bold'>Email <span>:</span></td>
+          <td>{$target_employee["email"]}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold">Company <span>:</span></td>
-          <td>Soft-Tech Technology LLC</td>
+          <td style='font-weight: bold'>Company <span>:</span></td>
+          <td>{$target_employee["company"]}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold">Department <span>:</span></td>
-          <td>Sales</td>
+          <td style='font-weight: bold'>Department <span>:</span></td>
+          <td>{$target_employee["department"]}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold">Position <span>:</span></td>
-          <td>Chief Operating Officer</td>
+          <td style='font-weight: bold'>Position <span>:</span></td>
+          <td>{$target_employee["position"]}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold">Joining Date <span>:</span></td>
-          <td>12/12/2024</td>
+          <td style='font-weight: bold'>Joining Date <span>:</span></td>
+          <td>{$target_employee["joining_date"]}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold">Blood Group <span>:</span></td>
-          <td>A+</td>
+          <td style='font-weight: bold'>Blood Group <span>:</span></td>
+          <td>{$target_employee["blood_group"]}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold">NID <span>:</span></td>
+          <td style='font-weight: bold'>NID <span>:</span></td>
           <td>
-            <a href="./degree.pdf" target="_blank" class="empDocViewBtn">View Document</a>
+            <a href='$nid_link' target='_blank' class='empDocViewBtn'>View Document</a>
           </td>
         </tr>
-        <tr>
-          <td style="font-weight: bold">SSN <span>:</span></td>
-          <td>
-            <a href="./degree.pdf" target="_blank" class="empDocViewBtn">View Document</a>
-          </td>
-        </tr>
-        <tr>
-          <td style="font-weight: bold">Certificate <span>:</span></td>
-          <td>
-            <a href="./degree.pdf" target="_blank" class="empDocViewBtn">View Document</a>
-          </td>
-        </tr>
+        $doc_rows
+       
       </table>
       <!-- Need to change the link extension .html to .php -->
       <a
-        href="./employeeView.html?employeeId=LLC-01"
-        target="_blank"
-        class="btn"
-        style="color: white">View & Print</a>
+        href='./employeeView.php?view_id={$target_employee["id"]}'
+        target='_blank'
+        class='btn'
+        style='color: white'>View & Print</a>
     </div>
   </div>
+        ";
+  }
+  ?>
+
   <!-- Employee Delete popup -->
   <div class="uniPopup" id="employeeDelete" style="display: none">
     <form action="" class="employeeDeleteContainer">
@@ -842,34 +1040,34 @@ include_once("./php/employee_signup.php");
   </div>
   <!-- Employee Update popup -->
   <div class="uniPopup" id="empUpdatePopup" style="display: none">
-    <form id="" method="post">
-      <input type="hidden" name="updateId" id="updateEmpId" value="" />
-      <span id="empUPclose"><i class="fa fa-solid fa-xmark"></i></span>
+    <form action="./php/employee_details_update.php" enctype="multipart/form-data" id="" method="post">
+      <input type="hidden" name="updateId" id="updateEmpId" value="<?php echo htmlspecialchars($target_employee['employee_id'] ?? ''); ?>" />
+      <a href="./index.php" id="empUPclose"><i class="fa fa-solid fa-xmark"></i></a>
       <h2 style="text-align: center">Employee Update</h2>
       <div class="formFlex">
-        <img id="emPhoto" src="./placeholder.jpg" alt="employee photo" />
+        <img id="emPhoto" src="<?php $img_u =  $target_employee["profile_image"] ? "./uploads/" . $target_employee["profile_image"] : "./placeholder.jpg";
+                                echo $img_u; ?>" alt="employee photo" />
         <div class="form-group" style="justify-content: center">
           <label for="employeePhoto">Employee Photo</label>
           <input
             type="file"
             id="employeePhoto"
-            name="employeePhoto"
-            required />
+            name="employeePhoto" />
         </div>
       </div>
       <div class="formFlex">
         <div class="form-group">
           <label for="firstName">First Name</label>
-          <input type="text" id="firstName" name="firstName" required />
+          <input type="text" id="firstName" name="firstName" required value="<?php echo htmlspecialchars($target_employee['first_name'] ?? ''); ?>" />
         </div>
         <div class="form-group">
           <label for="lastName">Last Name</label>
-          <input type="text" id="lastName" name="lastName" required />
+          <input type="text" id="lastName" name="lastName" required value="<?php echo htmlspecialchars($target_employee['last_name'] ?? ''); ?>" />
         </div>
       </div>
       <div class="form-group">
         <label for="fathersName">Father's Name</label>
-        <input type="text" id="fathersName" name="fathersName" required />
+        <input type="text" id="fathersName" name="fathersName" required value="<?php echo htmlspecialchars($target_employee['fathers_name'] ?? ''); ?>" />
       </div>
       <div class="formFlex">
         <div class="formFlex">
@@ -879,8 +1077,8 @@ include_once("./php/employee_signup.php");
               name="phoneCode"
               id="phoneCode"
               style="width: 115px; height: 39px">
-              <option value="+1">USA (+1)</option>
-              <option value="+880">BD (+880)</option>
+              <option value="+1" <?php if ($target_employee["number_type"] == "+1") echo "selected" ?>>USA (+1)</option>
+              <option value="+880" <?php if ($target_employee["number_type"] == "+880") echo "selected" ?>>BD (+880)</option>
             </select>
           </div>
           <div class="form-group">
@@ -890,28 +1088,28 @@ include_once("./php/employee_signup.php");
               id="phoneNumber"
               name="phoneNumber"
               required
-              value="+1" />
+              value="<?php echo htmlspecialchars($target_employee['contact_number'] ?? ''); ?>" />
           </div>
         </div>
         <div class="form-group">
           <label for="dob">Date of Birth</label>
-          <input type="date" id="dob" name="dob" style="height: 39px" />
+          <input type="date" id="dob" name="dob" style="height: 39px" value="<?php echo htmlspecialchars($target_employee['dob'] ?? ''); ?>" />
         </div>
       </div>
       <div class="form-group">
         <label for="address">Address</label>
-        <textarea id="address" name="address" rows="2"></textarea>
+        <textarea id="address" name="address" rows="2"><?php echo htmlspecialchars($target_employee['address'] ?? ''); ?></textarea>
       </div>
       <div class="form-group">
         <label for="email">Email</label>
-        <input type="email" id="email" name="email" required />
+        <input type="email" id="email" name="email" required value="<?php echo htmlspecialchars($target_employee['email'] ?? ''); ?>" />
       </div>
       <div class="form-group">
         <label for="company">Select Company</label>
         <select id="company" name="company" required>
           <option value="" style="display: none">-- Select Company --</option>
-          <option value="soft-tech technology">Soft-Tech Technology</option>
-          <option value="soft-tech technology lls">
+          <option value="soft-tech technology" <?php if ($target_employee["company"] == "soft-tech technology") echo "selected" ?>>Soft-Tech Technology</option>
+          <option value="soft-tech technology lls" <?php if ($target_employee["company"] == "soft-tech technology lls") echo "selected" ?>>
             Soft-Tech Technology LLC
           </option>
         </select>
@@ -923,14 +1121,14 @@ include_once("./php/employee_signup.php");
             <option value="" style="display: none">
               -- Select Department --
             </option>
-            <option value="it">IT</option>
-            <option value="sales">Sales</option>
-            <option value="marketing">Marketing</option>
+            <option value="it" <?php if ($target_employee["department"] == "it") echo "selected" ?>>IT</option>
+            <option value="sales" <?php if ($target_employee["department"] == "sales") echo "selected" ?>>Sales</option>
+            <option value="marketing" <?php if ($target_employee["department"] == "marketing") echo "selected" ?>>Marketing</option>
           </select>
         </div>
         <div class="form-group">
           <label for="position">Position</label>
-          <input type="text" id="position" name="position" required />
+          <input type="text" id="position" name="position" required value="<?php echo htmlspecialchars($target_employee['position'] ?? ''); ?>" />
         </div>
       </div>
       <div class="formFlex">
@@ -940,7 +1138,7 @@ include_once("./php/employee_signup.php");
             type="date"
             id="joiningDate"
             name="joiningDate"
-            style="height: 39px" />
+            style="height: 39px" value="<?php echo htmlspecialchars($target_employee['joining_date'] ?? ''); ?>" />
         </div>
         <div class="form-group">
           <label for="bloodGroup">Blood Group</label>
@@ -948,23 +1146,23 @@ include_once("./php/employee_signup.php");
             <option value="" style="display: none">
               -- Select Blood Group --
             </option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
+            <option value="A+" <?php if ($target_employee["blood_group"] == "A+") echo "selected" ?>>A+</option>
+            <option value="A-" <?php if ($target_employee["blood_group"] == "A-") echo "selected" ?>>A-</option>
+            <option value="B+" <?php if ($target_employee["blood_group"] == "B+") echo "selected" ?>>B+</option>
+            <option value="B-" <?php if ($target_employee["blood_group"] == "B-") echo "selected" ?>>B-</option>
+            <option value="AB+" <?php if ($target_employee["blood_group"] == "AB+") echo "selected" ?>>AB+</option>
+            <option value="AB-" <?php if ($target_employee["blood_group"] == "AB-") echo "selected" ?>>AB-</option>
+            <option value="O+" <?php if ($target_employee["blood_group"] == "O+") echo "selected" ?>>O+</option>
+            <option value="O-" <?php if ($target_employee["blood_group"] == "O-") echo "selected" ?>>O-</option>
           </select>
         </div>
       </div>
-      <fieldset>
+      <!-- <fieldset>
         <legend>Essential Documents</legend>
         <div class="formFlex">
           <div class="form-group">
             <label for="ssnornid">SSN/NID </label>
-            <input type="text" id="ssnornid" name="ssnornid" />
+            <input type="text" id="ssnornid" name="ssnornid" value="<?php echo htmlspecialchars($target_nid_doc['ssn_no'] ?? ''); ?>" />
           </div>
           <div class="form-group">
             <label for="ssnornidPhoto">SSN/NID Photo </label>
@@ -974,52 +1172,58 @@ include_once("./php/employee_signup.php");
       </fieldset>
       <fieldset id="additionalDocuments">
         <legend>Additional Documents</legend>
-        <div class="formFlex">
-          <div class="form-group">
-            <label for="docType">Document Type </label>
-            <input type="text" id="docType" name="docType" />
+        <?php
+        if ($all_other_documents && count($all_other_documents) > 0) {
+          foreach ($all_other_documents as $other_doc) {
+            echo "
+                    <div class='formFlex' style='margin-bottom:8px'>
+          <div class='form-group'>
+            <label for='docType'>Document Type </label>
+            <input type='text' id='docType' name='{$other_doc["doc_type"]}' value='{$other_doc["doc_type"]}' />
           </div>
-          <div class="form-group">
-            <label for="documentPhoto">Document Photo </label>
-            <input type="file" id="documentPhoto" name="documentPhoto" />
-          </div>
-          <div
-            id="addBtn"
-            style="display: flex; align-items: center; cursor: pointer">
-            <i class="fa-solid fa-plus" style="margin-top: 20px"></i>
+          <div class='form-group'>
+            <label for='documentPhoto'>Document Photo </label>
+            <input type='file' id='documentPhoto' name='{$other_doc["doc_photo"]}' />
           </div>
         </div>
-      </fieldset>
+              ";
+          }
+        }
+        ?>
+      </fieldset> -->
 
       <button type="submit" class="submit-btn">Update</button>
     </form>
   </div>
+  <!-- Correction popup -->
+  <div id="correctionPopup">
+    <form action="" method="post">
+      <a href="./index.php" id="correctionPopupClose"><i class="fa fa-solid fa-xmark"></i></a>
+      <div class="form-group">
+        <label for="correction">Correction</label>
+        <textarea name="correction" id="" style="resize: none; min-height:120px"></textarea>
+        <input type="hidden" id="correction_id" name="correction_id">
+      </div>
+      <div class="form-group">
+        <button type="submit" class="submit-btn">Submit</button>
+      </div>
+    </form>
+  </div>
+  <!-- popup close based on param -->
+  <script>
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.has("view_id")) {
+      document.getElementById("employeeDetailsPopup").style.display = "flex";
+    }
+    if (searchParams.has("edit_id")) {
+      document.getElementById("empUpdatePopup").style.display = "flex";
 
+    }
+  </script>
   <!-- Scripts -->
   <script>
     // view employee details popup
-    const viewEmBtn = document.querySelectorAll(".view-em-btn");
-    const employeeDetailsPopup = document.getElementById(
-      "employeeDetailsPopup"
-    );
-    const emdpCloseBtn = document.getElementById("emdc-close");
-    viewEmBtn.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        console.log("Click");
-        employeeDetailsPopup.style.display = "flex";
-      });
-    });
-    emdpCloseBtn.addEventListener("click", () => {
-      employeeDetailsPopup.style.display = "none";
-    });
-    employeeDetailsPopup.addEventListener("click", (e) => {
-      employeeDetailsPopup.style.display = "none";
-    });
-    document
-      .getElementById("employeeDetailsContent")
-      .addEventListener("click", (e) => {
-        e.stopPropagation();
-      });
+
     // Img url
     const emPhoto = document.getElementById("emPhoto");
     const employeePhoto = document.getElementById("employeePhoto");
@@ -1148,7 +1352,46 @@ include_once("./php/employee_signup.php");
       document.getElementById("activity").classList.replace("hidden", "active");
     }
   </script>
+  <!-- Project content show hide -->
   <script>
+    const handleProjectContent = (id) => {
+      document.querySelectorAll(".project-section").forEach(section => {
+        section.style.display = "none";
+      });
+      if (id == "createProject") {
+        document.getElementById("createProject").style.display = "flex";
+
+      }
+      if (id == "assignEmployee") {
+        document.getElementById("assignEmployee").style.display = "flex";
+
+      }
+      if (id == "projectReport") {
+        document.getElementById("projectReport").style.display = "block";
+
+      }
+    }
+  </script>
+  <!-- handle correction popup -->
+  <script>
+    const handleCorrection = (id => {
+      document.getElementById("correction_id").value = id;
+      document.getElementById("correctionPopup").style.display = "flex";
+    })
+  </script>
+  <!-- hide projects section based on role -->
+  <script>
+    if ("<?php echo $project_access ?>" == "false") {
+      document.getElementById("projects").remove();
+    }
+  </script>
+  <!-- project title for assign task -->
+  <script>
+    document.getElementById("project_id").addEventListener("change", (e) => {
+      // Get selected title (text)
+      const selectedTitle = e.target.options[e.target.selectedIndex].text;
+      document.getElementById("project_title_task").value = selectedTitle;
+    })
   </script>
 </body>
 

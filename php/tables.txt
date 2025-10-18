@@ -31,7 +31,8 @@ ALTER TABLE employee_personal_details
     add COLUMN department varchar(255) NOT NULL,
     add COLUMN position varchar(255) NOT NULL,
     add column joining_date varchar(255) NOT NULL,
-    add COLUMN blood_group varchar(10) NOT NULL
+    add COLUMN blood_group varchar(10) NOT NULL,
+    add COLUMN email varchar(100) DEFAULT NULL,
 
 
 //extra_document TABLE
