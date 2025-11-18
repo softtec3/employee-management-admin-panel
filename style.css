@@ -272,7 +272,7 @@ table {
   border-collapse: collapse;
 }
 .table-container table {
-  min-width: 1200px;
+  min-width: 1300px;
   overflow-x: auto;
 }
 thead th {
